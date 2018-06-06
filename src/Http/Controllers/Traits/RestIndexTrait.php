@@ -60,7 +60,7 @@ trait RestIndexTrait
                 $filter->buid($query, $request->input('query'));
             }
         } catch (QuerySyntaxException $e) {
-            return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'syntax error detected in filter']);
+            return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }
 
         // Pagination
