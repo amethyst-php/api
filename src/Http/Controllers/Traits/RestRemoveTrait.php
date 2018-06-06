@@ -41,7 +41,7 @@ trait RestRemoveTrait
                 ],
             ]);*/
 
-            return $this->success(['message' => 'ok']);
+            return $this->success(['message' => 'ok'], 204);
         }
 
         return $this->error(['errors' => $result->getSimpleErrors()]);

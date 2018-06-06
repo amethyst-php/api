@@ -36,7 +36,7 @@ trait RestCreateTrait
 
             return $this->success([
                 'resource' => $manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all(),
-            ]);
+            ], 201);
         }
 
         return $this->error([
