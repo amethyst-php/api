@@ -85,7 +85,7 @@ class Controller extends BaseController
     /**
      * Retrieve user.
      *
-     * @return \Railken\LaraOre\User\User
+     * @return mixed
      */
     public function getUser()
     {
