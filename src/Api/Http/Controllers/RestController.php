@@ -7,18 +7,46 @@ use Railken\Bag;
 
 abstract class RestController extends Controller
 {
-    protected $keys;
-    protected $manager;
-    protected static $query = [];
-    protected static $fillable = [];
+    /**
+     * @var Bag
+     */
+    public $keys;
+    
+    /**
+     * @var \Railken\Laravel\Manager\Contracts\ManagerContract
+     */
+    public $manager;
+    
+    /**
+     * @var array
+     */
+    public $queryable = [];
+    
+    /**
+     * @var array
+     */
+    public $selectable = [];
 
+    /**
+     * @var array
+     */
+    public $sortable = [];
+
+    /**
+     * @var array
+     */
+    public $fillable = [];
+
+    /**
+     * Construct
+     */
     public function __construct()
     {
         $this->keys = new Bag();
-        $this->keys->query = static::$query;
-        $this->keys->selectable = collect(empty(static::$selectable) ? static::$query : static::$selectable);
-        $this->keys->sortable = collect(empty(static::$sortable) ? static::$query : static::$sortable);
-        $this->keys->fillable = static::$fillable;
+        $this->keys->queryable = $this->queryable;
+        $this->keys->selectable = collect(empty($this->selectable) ? $this->queryable : $this->selectable);
+        $this->keys->sortable = collect(empty($this->sortable) ? $this->queryable : $this->sortable);
+        $this->keys->fillable = $this->fillable;
     }
 
     /**
