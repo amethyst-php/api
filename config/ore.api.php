@@ -3,6 +3,6 @@
 return [
 
     'router' => [
-        'prefix' => 'api/v1'
+        'prefix' => 'api/v1/ore'
     ]
 ];
