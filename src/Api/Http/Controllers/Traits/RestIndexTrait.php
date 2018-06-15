@@ -57,7 +57,7 @@ trait RestIndexTrait
         try {
             if ($request->input('query')) {
                 $filter = new Filter($this->manager->newEntity()->getTable(), $selectable->toArray());
-                $filter->buid($query, $request->input('query'));
+                $filter->build($query, $request->input('query'));
             }
         } catch (QuerySyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
