@@ -93,4 +93,14 @@ abstract class RestController extends Controller
             ->serialize($record, $select)
             ->all();
     }
+
+    /**
+     * Create a new instance for query.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function getQuery()
+    {
+        return $this->manager->repository->getQuery();
+    }
 }
