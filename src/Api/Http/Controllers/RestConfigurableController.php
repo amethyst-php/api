@@ -8,6 +8,11 @@ abstract class RestConfigurableController extends RestController
 {
     
     /**
+     * @var string
+     */
+    public $config;
+    
+    /**
      * Create a new instance
      */
     public function __construct()
