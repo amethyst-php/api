@@ -38,6 +38,8 @@ class Sorter
     public function setKeys($keys)
     {
         $this->keys = $keys;
+
+        return $this;
     }
 
     /**
