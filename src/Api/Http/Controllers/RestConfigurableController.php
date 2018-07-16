@@ -25,5 +25,11 @@ abstract class RestConfigurableController extends RestController
         $this->manager->setAgent($this->getUser());
 
         parent::__construct();
+
+        $this->middleware(function ($request, $next) {
+            $this->manager->setAgent($this->getUser());
+
+            return $next($request);
+        });
     }
 }
