@@ -11,17 +11,17 @@ abstract class RestController extends Controller
      * @var Bag
      */
     public $keys;
-    
+
     /**
      * @var \Railken\Laravel\Manager\Contracts\ManagerContract
      */
     public $manager;
-    
+
     /**
      * @var array
      */
     public $queryable = [];
-    
+
     /**
      * @var array
      */
@@ -38,7 +38,7 @@ abstract class RestController extends Controller
     public $fillable = [];
 
     /**
-     * Construct
+     * Construct.
      */
     public function __construct()
     {

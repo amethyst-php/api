@@ -4,11 +4,10 @@ namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Railken\Laravel\ApiHelpers\Filter;
 use Railken\LaraOre\Api\Support\Paginator;
 use Railken\LaraOre\Api\Support\Sorter;
+use Railken\Laravel\ApiHelpers\Filter;
 use Railken\SQ\Exceptions\QuerySyntaxException;
-use Railken\LaraOre\Api\Support\Exceptions\InvalidSorterFieldException;
 
 trait RestIndexRelationTrait
 {
@@ -24,7 +23,6 @@ trait RestIndexRelationTrait
     {
         $query = $this->getQuery($id);
         DB::enableQueryLog();
-
 
         // Sorter
         $sort = new Sorter();

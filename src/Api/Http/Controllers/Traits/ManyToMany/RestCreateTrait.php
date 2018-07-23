@@ -7,10 +7,8 @@ use Railken\Bag;
 
 trait RestCreateTrait
 {
-
-
     /**
-     * Create a new resource
+     * Create a new resource.
      *
      * @param \Illuminate\Http\Request $request
      *
@@ -22,9 +20,9 @@ trait RestCreateTrait
     }
 
     /**
-     * Create a new resource
+     * Create a new resource.
      *
-     * @param string $container_id
+     * @param string                   $container_id
      * @param \Illuminate\Http\Request $request
      *
      * @return response
@@ -32,7 +30,7 @@ trait RestCreateTrait
     public function create(string $container_id, Request $request)
     {
         $container = $this->managers->container;
-        
+
         if (!$resource_container = $this->managers->container->getRepository()->findOneById($container_id)) {
             return $this->not_found();
         }
@@ -49,12 +47,12 @@ trait RestCreateTrait
             $this->attach($resource_container, $resource);
 
             return $this->success([
-                'resource' => $manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all()
+                'resource' => $manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all(),
             ]);
         }
-        
+
         return $this->error([
-            'errors' => $result->getSimpleErrors()
+            'errors' => $result->getSimpleErrors(),
         ]);
     }
 }

@@ -6,14 +6,13 @@ use Illuminate\Support\Facades\Config;
 
 abstract class RestConfigurableController extends RestController
 {
-    
     /**
      * @var string
      */
     public $config;
-    
+
     /**
-     * Create a new instance
+     * Create a new instance.
      */
     public function __construct()
     {
@@ -21,7 +20,7 @@ abstract class RestConfigurableController extends RestController
 
         $this->queryable = array_merge($this->queryable, array_keys($config['attributes']));
         $this->fillable = array_merge($this->fillable, array_keys($config['attributes']));
-        $this->manager = new $config['manager'];
+        $this->manager = new $config['manager']();
         $this->manager->setAgent($this->getUser());
 
         parent::__construct();

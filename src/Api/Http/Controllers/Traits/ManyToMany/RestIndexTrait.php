@@ -4,18 +4,17 @@ namespace Railken\LaraOre\Api\Http\Controllers\Traits\ManyToMany;
 
 use Illuminate\Http\Request;
 use Railken\LaraEye\Filter;
-use Railken\SQ\Exceptions\QuerySyntaxException;
+use Railken\LaraOre\Api\Support\Exceptions\InvalidSorterFieldException;
 use Railken\LaraOre\Api\Support\Paginator;
 use Railken\LaraOre\Api\Support\Sorter;
-use Railken\LaraOre\Api\Support\Exceptions\InvalidSorterFieldException;
+use Railken\SQ\Exceptions\QuerySyntaxException;
 
 trait RestIndexTrait
 {
-
     /**
-     * Display resources
+     * Display resources.
      *
-     * @param mixed $key
+     * @param mixed   $key
      * @param Request $request
      *
      * @return response
@@ -27,36 +26,32 @@ trait RestIndexTrait
 
     public function createIndexResponseByQuery($query, Request $request)
     {
-        # Sorter
+        // Sorter
         $sort = new Sorter();
         $sort->setKeys($this->keys->sortable->toArray());
-
 
         try {
             $sort->add($request->input('sort_field', 'id'), strtolower($request->input('sort_direction', 'desc')));
         } catch (InvalidSorterFieldException $e) {
-            return $this->error(["code" => "SORT_INVALID_FIELD", "message" => "Invalid field for sorting"]);
+            return $this->error(['code' => 'SORT_INVALID_FIELD', 'message' => 'Invalid field for sorting']);
         }
 
         foreach ($sort->get() as $attribute) {
             $query->orderBy($this->parseKey($attribute->getName()), $attribute->getDirection());
         }
 
-        # Select
-        $select = collect(explode(",", $request->input("select", "")));
+        // Select
+        $select = collect(explode(',', $request->input('select', '')));
 
         $select->count() > 0 &&
             $select = $this->keys->selectable->filter(function ($attr) use ($select) {
                 return $select->contains($attr);
             });
 
-       
         $select->count() == 0 &&
             $select = $this->keys->selectable;
 
-
         $selectable = $select;
-
 
         try {
             if ($request->input('query')) {
@@ -67,7 +62,7 @@ trait RestIndexTrait
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'syntax error detected in filter']);
         }
 
-        # Pagination
+        // Pagination
         $paginator = new Paginator();
         $paginator = $paginator->paginate($query->count(), $request->input('page', 1), $request->input('show', 10));
 
@@ -81,9 +76,9 @@ trait RestIndexTrait
             'resources' => $resources->map(function ($record) use ($select) {
                 return $this->serialize($record, $select);
             }),
-            'select' => $select->values(),
+            'select'     => $select->values(),
             'pagination' => $paginator->all(),
-            'sort' => $sort->get()->map(function ($attribute) {
+            'sort'       => $sort->get()->map(function ($attribute) {
                 return ['name' => $attribute->getName(), 'value' => $attribute->getDirection()];
             })->toArray(),
         ]);

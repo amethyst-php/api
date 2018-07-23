@@ -6,11 +6,10 @@ use Illuminate\Http\Request;
 
 trait RestRemoveTrait
 {
-
     /**
-     * Display a resource
+     * Display a resource.
      *
-     * @param integer $id
+     * @param int                      $id
      * @param \Illuminate\Http\Request $request
      *
      * @return response
@@ -22,16 +21,15 @@ trait RestRemoveTrait
         if (!$resource) {
             return $this->not_found();
         }
-        
+
         $before = $this->manager->serializer->serialize($resource)->toArray();
 
         $result = $this->manager->remove($resource);
 
-
         if ($result->ok()) {
             return $this->success(['message' => 'ok']);
         }
-    
+
         return $this->error(['errors' => $result->getSimpleErrors()]);
     }
 }

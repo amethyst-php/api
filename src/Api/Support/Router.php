@@ -2,8 +2,8 @@
 
 namespace Railken\LaraOre\Api\Support;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Route;
 
 class Router
 {

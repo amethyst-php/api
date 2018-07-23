@@ -6,12 +6,11 @@ use Illuminate\Http\Request;
 
 trait RestUpdateTrait
 {
-
     /**
-     * Display a resource
+     * Display a resource.
      *
-     * @param integer $container_id
-     * @param integer $id
+     * @param int                      $container_id
+     * @param int                      $id
      * @param \Illuminate\Http\Request $request
      *
      * @return response
@@ -32,23 +31,20 @@ trait RestUpdateTrait
             return $this->not_found();
         }
 
-
         $before = $manager->serializer->serialize($resource)->toArray();
 
         $params = $request->only($this->keys->fillable);
 
-
         $result = $manager->update($resource, $params);
-
 
         if ($result->ok()) {
             return $this->success([
-                'resource' => $manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all()
+                'resource' => $manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all(),
             ]);
         }
 
         return $this->error([
-            'errors' => $result->getSimpleErrors()
+            'errors' => $result->getSimpleErrors(),
         ]);
     }
 }

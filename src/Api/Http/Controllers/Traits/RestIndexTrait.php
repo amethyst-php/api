@@ -4,10 +4,10 @@ namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
 use Railken\LaraEye\Filter;
-use Railken\SQ\Exceptions\QuerySyntaxException;
+use Railken\LaraOre\Api\Support\Exceptions\InvalidSorterFieldException;
 use Railken\LaraOre\Api\Support\Paginator;
 use Railken\LaraOre\Api\Support\Sorter;
-use Railken\LaraOre\Api\Support\Exceptions\InvalidSorterFieldException;
+use Railken\SQ\Exceptions\QuerySyntaxException;
 
 trait RestIndexTrait
 {
