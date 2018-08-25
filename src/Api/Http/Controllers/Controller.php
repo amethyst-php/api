@@ -7,10 +7,18 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Railken\LaraOre\Api\Http\Middleware\AcceptJsonMiddleware;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function __construct()
+    {
+        $this->middleware(AcceptJsonMiddleware::class);
+
+        parent::__construct();
+    }
 
     /**
      * Return a JSON response with status success.

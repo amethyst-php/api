@@ -21,6 +21,7 @@ class ApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->register(\Railken\Laravel\Manager\ManagerServiceProvider::class);
         $this->mergeConfigFrom(__DIR__.'/../config/ore.api.php', 'ore.api');
     }
 }

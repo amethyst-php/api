@@ -25,7 +25,7 @@ require __DIR__.'/vendor/autoload.php';
 | Create the app instance using the base test
 */
 
-class AppTest extends \Railken\LaraOre\Support\Tests\BaseTest
+class AppTest extends \Railken\LaraOre\Api\Tests\BaseTest
 {
     /**
      * Retrieve app
