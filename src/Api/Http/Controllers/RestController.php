@@ -7,8 +7,8 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use League\Fractal;
 use League\Fractal\Serializer\JsonApiSerializer;
-use League\Fractal\TransformerAbstract;
 use Railken\Bag;
+use Railken\LaraOre\Api\Contracts\TransformerContract;
 use Railken\Laravel\Manager\Contracts\EntityContract;
 use Railken\Laravel\Manager\Tokens;
 
@@ -116,7 +116,7 @@ abstract class RestController extends Controller
         return new $classTransformer();
     }
 
-    public function initializeFractalTransformer(TransformerAbstract $transformer, EntityContract $entity = null, Request $request)
+    public function initializeFractalTransformer(TransformerContract $transformer, EntityContract $entity = null, Request $request)
     {
         if ($entity !== null) {
             $transformer->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
@@ -131,7 +131,7 @@ abstract class RestController extends Controller
         $manager = new Fractal\Manager();
         $manager->setSerializer(new JsonApiSerializer());
 
-        if ($request->input('include')) {
+        if ($request->input('include') !== null) {
             $manager->parseIncludes($request->input('include'));
         }
 
@@ -140,16 +140,16 @@ abstract class RestController extends Controller
 
     public function getSelectedAttributesByRequest(Request $request)
     {
-        $select = collect(explode(',', $request->input('select', '')));
+        $select = collect(explode(',', strval($request->input('select', ''))));
 
         if ($select->count() > 0) {
-            $select = $this->keys->selectable->filter(function ($attr) use ($select) {
+            $select = $this->keys->get('selectable')->filter(function ($attr) use ($select) {
                 return $select->contains($attr);
             });
         }
 
         if ($select->count() == 0) {
-            $select = $this->keys->selectable;
+            $select = $this->keys->get('selectable');
         }
 
         return $select->toArray();

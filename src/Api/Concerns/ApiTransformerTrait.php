@@ -17,7 +17,7 @@ trait ApiTransformerTrait
         return $this;
     }
 
-    public function getSelectedAttributes()
+    public function getSelectedAttributes(): array
     {
         return $this->selectedAttributes;
     }
@@ -29,7 +29,7 @@ trait ApiTransformerTrait
         return $this;
     }
 
-    public function getAuthorizedAttributes()
+    public function getAuthorizedAttributes(): array
     {
         return $this->authorizedAttributes;
     }

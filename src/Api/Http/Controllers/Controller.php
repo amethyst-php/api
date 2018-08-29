@@ -5,6 +5,7 @@ namespace Railken\LaraOre\Api\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +26,7 @@ class Controller extends BaseController
      */
     public function response($data = [], $status = 200, $headers = [], $options = 0)
     {
-        return response()->json($data, $status, $headers, $options);
+        return new JsonResponse($data, $status, $headers, $options);
     }
 
     /**
