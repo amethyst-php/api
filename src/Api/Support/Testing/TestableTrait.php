@@ -17,39 +17,43 @@ trait TestableTrait
 
         // POST /
         $response = $this->post($url, $parameters->toArray());
-        $this->assertOrPrint($url, $response, 201);
+        $this->assertOrPrint($url, $parameters, $response, 201);
         $resource = json_decode($response->getContent())->data;
 
         // GET /
         $response = $this->get($url, []);
-        $this->assertOrPrint($url, $response, 200);
+        $this->assertOrPrint($url, $parameters, $response, 200);
 
         // GET /
         $response = $this->get($url, ['query' => 'id eq 1']);
-        $this->assertOrPrint($url, $response, 200);
+        $this->assertOrPrint($url, $parameters, $response, 200);
 
         // GET /id
         $response = $this->get($url.'/'.$resource->id);
-        $this->assertOrPrint($url, $response, 200);
+        $this->assertOrPrint($url, $parameters, $response, 200);
 
         // PUT /id
         $response = $this->put($url.'/'.$resource->id, $parameters->toArray());
         $resource = json_decode($response->getContent())->data;
-        $this->assertOrPrint($url, $response, 200);
+        $this->assertOrPrint($url, $parameters, $response, 200);
 
         // DELETE /id
         $response = $this->delete($url.'/'.$resource->id);
-        $this->assertOrPrint($url, $response, 204);
+        $this->assertOrPrint($url, $parameters, $response, 204);
         $response = $this->get($url.'/'.$resource->id);
-        $this->assertOrPrint($url, $response, 404);
+        $this->assertOrPrint($url, $parameters, $response, 404);
     }
 
-    public function assertOrPrint($url, $response, $code)
+    public function assertOrPrint($url, $parameters, $response, $code)
     {
-        if ($response->getStatusCode() !== $code) {
-            print_r($url);
-            print_r($response->getContent());
-        }
+        print_r("\n\n----------------------------------------------------------------");
+        print_r(sprintf("\nURL Requested: %s", $url));
+        print_r(sprintf("\n\nParameters Sent:\n%s", json_encode($parameters->toArray(), JSON_PRETTY_PRINT)));
+        print_r(sprintf("\n\nResponse Status Code: %s", $response->getStatusCode()));
+        print_r(sprintf("\n\nResponse Body:\n%s", json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT)));
+
+        // if ($response->getStatusCode() !== $code) {
+        // }
 
         $response->assertStatus($code);
     }
