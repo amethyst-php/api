@@ -15,6 +15,16 @@ use Railken\Laravel\Manager\Tokens;
 abstract class RestController extends Controller
 {
     /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $transformerClass;
+
+    /**
      * @var Bag
      */
     public $keys;
@@ -50,10 +60,10 @@ abstract class RestController extends Controller
     public function __construct()
     {
         $this->keys = new Bag();
-        $this->keys->queryable = $this->queryable;
-        $this->keys->selectable = collect(empty($this->selectable) ? $this->queryable : $this->selectable);
-        $this->keys->sortable = collect(empty($this->sortable) ? $this->queryable : $this->sortable);
-        $this->keys->fillable = $this->fillable;
+        $this->keys->set('queryable', $this->queryable);
+        $this->keys->set('selectable', collect(empty($this->selectable) ? $this->queryable : $this->selectable));
+        $this->keys->set('sortable', collect(empty($this->sortable) ? $this->queryable : $this->sortable));
+        $this->keys->set('fillable', $this->fillable);
     }
 
     public function getResourceName()
@@ -83,7 +93,7 @@ abstract class RestController extends Controller
         $keys = explode('.', $key);
 
         if (count($keys) === 1) {
-            $keys = [$this->manager->repository->newEntity()->getTable(), $keys[0]];
+            $keys = [$this->getManager()->getRepository()->newEntity()->getTable(), $keys[0]];
         }
 
         return DB::raw('`'.implode('.', array_slice($keys, 0, -1)).'`.'.$keys[count($keys) - 1]);
@@ -96,7 +106,7 @@ abstract class RestController extends Controller
      */
     public function getQuery()
     {
-        return $this->manager->repository->getQuery();
+        return $this->getManager()->getRepository()->getQuery();
     }
 
     public function getFractalTransformer()

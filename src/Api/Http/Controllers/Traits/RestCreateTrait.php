@@ -24,6 +24,6 @@ trait RestCreateTrait
             return $this->response(['errors' => $result->getSimpleErrors()], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->success($this->serialize($result->getResource(), $request), Response::HTTP_CREATED);
+        return $this->response($this->serialize($result->getResource(), $request), Response::HTTP_CREATED);
     }
 }

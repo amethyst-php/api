@@ -47,8 +47,8 @@ trait TestableTrait
     public function assertOrPrint($url, $response, $code)
     {
         if ($response->getStatusCode() !== $code) {
-            //print_r($url);
-            //print_r($response->getContent());
+            print_r($url);
+            print_r($response->getContent());
         }
 
         $response->assertStatus($code);

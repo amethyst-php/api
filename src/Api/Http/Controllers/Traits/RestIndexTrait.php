@@ -62,6 +62,6 @@ trait RestIndexTrait
             // ->select($selectable->toArray())
             ->get();
 
-        return $this->success($this->serializeCollection($resources, $request));
+        return $this->response($this->serializeCollection($resources, $request));
     }
 }

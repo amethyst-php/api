@@ -12,79 +12,20 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
-     * Return a JSON response with status success.
+     * Return a new JSON response from the application.
      *
-     * @param array $data
-     * @param int   $code
+     * @param string|array $data
+     * @param int          $status
+     * @param array        $headers
+     * @param int          $options
      *
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @static
      */
-    public function success($data = [], $code = 200)
+    public function response($data = [], $status = 200, $headers = [], $options = 0)
     {
-        return response()->json(array_merge([], $data), $code);
-    }
-
-    /**
-     * Return a JSON response with status error.
-     *
-     * @param array $data
-     * @param int   $code
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function error($data = [], $code = 400)
-    {
-        return response()->json(array_merge([], $data), $code);
-    }
-
-    /**
-     * Return a JSON response with status error.
-     *
-     * @param array $data
-     * @param int   $code
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function not_found($data = [], $code = 404)
-    {
-        return response()->json(array_merge(['message' => 'not found'], $data), $code);
-    }
-
-    /**
-     * Return a JSON response.
-     *
-     * @param array $data
-     * @param int   $code
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function response($data = [], $code = 200)
-    {
-        return response()->json($data, $code);
-    }
-
-    /**
-     * Return a view.
-     *
-     * @param string $filename
-     * @param array  $data
-     * @param int    $code
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function view($view, $data = [], $code = 200)
-    {
-        $content = view($view, $data);
-        $response = response($content, $code);
-        $response->header('Content-Type', 'application/json');
-
-        return $response;
+        return response()->json($data, $status, $headers, $options);
     }
 
     /**
