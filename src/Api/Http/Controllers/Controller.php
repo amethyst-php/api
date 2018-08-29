@@ -7,7 +7,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
-use Railken\LaraOre\Api\Http\Middleware\AcceptJsonMiddleware;
 
 class Controller extends BaseController
 {
@@ -15,8 +14,6 @@ class Controller extends BaseController
 
     public function __construct()
     {
-        $this->middleware(AcceptJsonMiddleware::class);
-
         parent::__construct();
     }
 
@@ -30,7 +27,7 @@ class Controller extends BaseController
      */
     public function success($data = [], $code = 200)
     {
-        return response()->json(array_merge(['status' => 'success'], $data), $code);
+        return response()->json(array_merge([], $data), $code);
     }
 
     /**
@@ -43,7 +40,7 @@ class Controller extends BaseController
      */
     public function error($data = [], $code = 400)
     {
-        return response()->json(array_merge(['status' => 'error'], $data), $code);
+        return response()->json(array_merge([], $data), $code);
     }
 
     /**
@@ -56,7 +53,7 @@ class Controller extends BaseController
      */
     public function not_found($data = [], $code = 404)
     {
-        return response()->json(array_merge(['status' => 'error', 'message' => 'not found'], $data), $code);
+        return response()->json(array_merge(['message' => 'not found'], $data), $code);
     }
 
     /**
@@ -69,7 +66,7 @@ class Controller extends BaseController
      */
     public function response($data = [], $code = 200)
     {
-        return response()->json($data = [], $code);
+        return response()->json($data, $code);
     }
 
     /**

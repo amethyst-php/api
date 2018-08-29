@@ -2,17 +2,15 @@
 
 namespace Railken\LaraOre\Api\Tests;
 
-use Railken\LaraOre\Api\Support\Testing\TestableTrait;
-use Illuminate\Support\Facades\Schema;
 use Railken\Bag;
+use Railken\LaraOre\Api\Support\Testing\TestableTrait;
 
 class ApiTest extends BaseTest
-{	
+{
+    use TestableTrait;
 
-	use TestableTrait;
-
-   	public function testBase()
+    public function testBase()
     {
-        $this->commonTest("/api/v1/ore/admin/foo", new Bag(['name' => 'foo']));
+        $this->commonTest('/api/v1/ore/admin/foo', new Bag(['name' => 'foo']));
     }
 }

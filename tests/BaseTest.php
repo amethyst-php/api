@@ -2,12 +2,11 @@
 
 namespace Railken\LaraOre\Api\Tests;
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Database\Schema\Blueprint;
-use Railken\LaraOre\Api\Support\Router;
-use Illuminate\Support\Arr;
 use Controllers\FooController;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Railken\LaraOre\Api\Support\Router;
 
 abstract class BaseTest extends \Orchestra\Testbench\TestCase
 {
@@ -19,9 +18,9 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
         $dotenv = new \Dotenv\Dotenv(__DIR__.'/..', '.env');
         $dotenv->load();
 
-    	parent::setUp();
+        parent::setUp();
 
-    	Schema::dropIfExists('foo');
+        Schema::dropIfExists('foo');
 
         Schema::create('foo', function (Blueprint $table) {
             $table->increments('id');
@@ -42,7 +41,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
             $router->get('/{id}', ['uses' => $controller.'@show']);
         });
 
-        Route::fallback(function(){
+        Route::fallback(function () {
             return response()->json(['message' => 'Not Found!'], 404);
         });
     }

@@ -3,6 +3,7 @@
 namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 trait RestUpdateTrait
 {
@@ -16,40 +17,20 @@ trait RestUpdateTrait
      */
     public function update($id, Request $request)
     {
-        $resource = $this->manager->getRepository()->findOneById($id);
+        $entity = $this->manager->getRepository()->findOneById($id);
 
-        if (!$resource) {
-            return $this->not_found();
+        if (!$entity) {
+            return $this->response(null, Response::HTTP_NOT_FOUND);
         }
-
-        $before = $this->manager->serializer->serialize($resource)->toArray();
 
         $params = $request->only($this->keys->fillable);
 
-        $result = $this->manager->update($resource, $params);
+        $result = $this->manager->update($entity, $params);
 
-        if ($result->ok()) {
-            /*$m = new \Railken\LaraOre\Core\Log\LogManager();
-            $m->create([
-                'type'     => 'api',
-                'category' => 'update',
-                'message'  => null,
-                'vars'     => [
-                    'entity_class' => $this->manager->getRepository()->getEntity(),
-                    'entity_id'    => $result->getResource()->id,
-                    'before'       => $before,
-                    'after'        => $this->manager->serializer->serialize($result->getResource())->toArray(),
-                    'user_id'      => $this->getUser()->id,
-                ],
-            ]);*/
-
-            return $this->success([
-                'resource' => $this->manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all(),
-            ]);
+        if (!$result->ok()) {
+            return $this->response(['errors' => $result->getSimpleErrors()], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->error([
-            'errors' => $result->getSimpleErrors(),
-        ]);
+        return $this->response($this->serialize($result->getResource(), $request), Response::HTTP_OK);
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Controllers;
 
-use Illuminate\Support\Facades\Config;
+use Foo\FooManager;
 use Railken\LaraOre\Api\Http\Controllers\RestController;
 use Railken\LaraOre\Api\Http\Controllers\Traits as RestTraits;
-use Foo\FooManager;
+use Transformers\FooTransformer;
 
 class FooController extends RestController
 {
@@ -14,6 +14,10 @@ class FooController extends RestController
     use RestTraits\RestUpdateTrait;
     use RestTraits\RestShowTrait;
     use RestTraits\RestRemoveTrait;
+
+    public $name = 'foo';
+
+    public $transformerClass = FooTransformer::class;
 
     public $queryable = [
         'id',
@@ -33,7 +37,7 @@ class FooController extends RestController
     {
         $this->manager = $manager;
         $this->manager->setAgent($this->getUser());
-        
+
         parent::__construct();
     }
 

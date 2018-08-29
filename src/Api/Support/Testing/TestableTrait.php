@@ -1,4 +1,5 @@
 <?php
+
 namespace Railken\LaraOre\Api\Support\Testing;
 
 trait TestableTrait
@@ -8,7 +9,17 @@ trait TestableTrait
         if (!$check) {
             $check = $parameters;
         }
-        
+
+        $this->withHeaders([
+            'Accept'       => 'application/json',
+            'Content-Type' => 'application/json',
+        ]);
+
+        // POST /
+        $response = $this->post($url, $parameters->toArray());
+        $this->assertOrPrint($url, $response, 201);
+        $resource = json_decode($response->getContent())->data;
+
         // GET /
         $response = $this->get($url, []);
         $this->assertOrPrint($url, $response, 200);
@@ -17,18 +28,13 @@ trait TestableTrait
         $response = $this->get($url, ['query' => 'id eq 1']);
         $this->assertOrPrint($url, $response, 200);
 
-        // POST /
-        $response = $this->post($url, $parameters->toArray());
-        $this->assertOrPrint($url, $response, 201);
-        $resource = json_decode($response->getContent())->resource;
-
         // GET /id
         $response = $this->get($url.'/'.$resource->id);
         $this->assertOrPrint($url, $response, 200);
 
         // PUT /id
         $response = $this->put($url.'/'.$resource->id, $parameters->toArray());
-        $resource = json_decode($response->getContent())->resource;
+        $resource = json_decode($response->getContent())->data;
         $this->assertOrPrint($url, $response, 200);
 
         // DELETE /id
@@ -41,8 +47,8 @@ trait TestableTrait
     public function assertOrPrint($url, $response, $code)
     {
         if ($response->getStatusCode() !== $code) {
-            print_r($url);
-            print_r($response->getContent());
+            //print_r($url);
+            //print_r($response->getContent());
         }
 
         $response->assertStatus($code);
