@@ -4,7 +4,9 @@ namespace Railken\LaraOre\Api\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use League\Fractal;
 use League\Fractal\Serializer\JsonApiSerializer;
 use Railken\Bag;
@@ -74,7 +76,7 @@ abstract class RestController extends Controller
      */
     public function getResourceName()
     {
-        return $this->name !== null ? $this->name : strtolower(str_replace('Controller', '', get_class($this)));
+        return $this->name !== null ? $this->name : strtolower(str_replace('Controller', '', (new \ReflectionClass($this))->getShortName()));
     }
 
     /**
@@ -132,10 +134,13 @@ abstract class RestController extends Controller
         return $transformer;
     }
 
-    public function getFractalManager(Request $request)
+    public function getFractalManager(Request $request, $container = 'admin')
     {
+        print_r(Route::currentRouteName());
+        die();
+
         $manager = new Fractal\Manager();
-        $manager->setSerializer(new JsonApiSerializer());
+        $manager->setSerializer(new JsonApiSerializer($request->getSchemeAndHttpHost().'/'.Config::get('ore.api.http.'.$container.'.router.prefix')));
 
         if ($request->input('include') !== null) {
             $manager->parseIncludes($request->input('include'));

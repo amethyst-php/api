@@ -29,7 +29,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
             $table->softDeletes();
         });
 
-        Router::group('foo', ['prefix' => 'admin/foo'], function ($router) {
+        Router::group('admin', ['prefix' => 'foo'], function ($router) {
             $controller = FooController::class;
 
             $router->get('/', ['uses' => $controller.'@index']);
