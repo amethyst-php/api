@@ -136,8 +136,6 @@ abstract class RestController extends Controller
 
     public function getFractalManager(Request $request, $container = 'admin')
     {
-        print_r(Route::currentRouteName());
-        die();
 
         $manager = new Fractal\Manager();
         $manager->setSerializer(new JsonApiSerializer($request->getSchemeAndHttpHost().'/'.Config::get('ore.api.http.'.$container.'.router.prefix')));
