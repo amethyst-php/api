@@ -2,11 +2,8 @@
 
 namespace Transformers;
 
-use League\Fractal\TransformerAbstract;
-use Railken\LaraOre\Api\Concerns\ApiTransformerTrait;
-use Railken\LaraOre\Api\Contracts\TransformerContract;
+use Railken\LaraOre\Api\Transformers\BaseTransformer;
 
-class FooTransformer extends TransformerAbstract implements TransformerContract
+class FooTransformer extends BaseTransformer
 {
-    use ApiTransformerTrait;
 }

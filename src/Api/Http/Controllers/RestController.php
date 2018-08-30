@@ -9,6 +9,7 @@ use League\Fractal;
 use League\Fractal\Serializer\JsonApiSerializer;
 use Railken\Bag;
 use Railken\LaraOre\Api\Contracts\TransformerContract;
+use Railken\LaraOre\Api\Transformers\BaseTransformer;
 use Railken\Laravel\Manager\Contracts\EntityContract;
 use Railken\Laravel\Manager\Tokens;
 
@@ -22,7 +23,7 @@ abstract class RestController extends Controller
     /**
      * @var string
      */
-    public $transformerClass;
+    public $transformerClass = BaseTransformer::class;
 
     /**
      * @var Bag
@@ -66,9 +67,14 @@ abstract class RestController extends Controller
         $this->keys->set('fillable', $this->fillable);
     }
 
+    /**
+     * Retrieve resource name.
+     *
+     * @return string
+     */
     public function getResourceName()
     {
-        return $this->name;
+        return $this->name !== null ? $this->name : strtolower(str_replace('Controller', '', get_class($this)));
     }
 
     /**
