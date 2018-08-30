@@ -12,7 +12,6 @@ trait TestableTrait
 
         $this->withHeaders([
             'Accept'       => 'application/json',
-            'Content-Type' => 'application/json',
         ]);
 
         // POST /
@@ -50,7 +49,7 @@ trait TestableTrait
         print_r(sprintf("\n%s %s", $method, $url));
         print_r(sprintf("\n\nParameters Sent:\n%s", json_encode($parameters->toArray(), JSON_PRETTY_PRINT)));
         print_r(sprintf("\n\nResponse Status Code: %s", $response->getStatusCode()));
-        print_r(sprintf("\n\nResponse Body:\n%s", json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT)));
+        print_r(sprintf("\n\nResponse Body:\n%s\n", json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT)));
 
         // if ($response->getStatusCode() !== $code) {
         // }
