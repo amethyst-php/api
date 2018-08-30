@@ -134,11 +134,15 @@ abstract class RestController extends Controller
         return $transformer;
     }
 
-    public function getFractalManager(Request $request, $container = 'admin')
+    public function getResourceBaseUrl(Request $request)
     {
+        return $request->getSchemeAndHttpHost().Config::get('ore.api.http.'.explode(".", Route::getCurrentRoute()->getName())[0].'.router.prefix');
+    }
 
+    public function getFractalManager(Request $request)
+    {
         $manager = new Fractal\Manager();
-        $manager->setSerializer(new JsonApiSerializer($request->getSchemeAndHttpHost().'/'.Config::get('ore.api.http.'.$container.'.router.prefix')));
+        $manager->setSerializer(new JsonApiSerializer($this->getResourceBaseUrl($request)));
 
         if ($request->input('include') !== null) {
             $manager->parseIncludes($request->input('include'));

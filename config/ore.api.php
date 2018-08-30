@@ -4,14 +4,14 @@ return [
     'http' => [
         'app' => [
             'router'     => [
-                'name'   => 'app',
-                'prefix' => 'api/v1/ore/',
+                'as'   => 'app.',
+                'prefix' => '/api/v1/ore',
             ],
         ],
         'admin' => [
             'router' => [
-                'name'   => 'admin',
-                'prefix' => 'api/v1/ore/admin/',
+                'as'   => 'admin.',
+                'prefix' => '/api/v1/ore/admin',
             ],
         ],
     ],
