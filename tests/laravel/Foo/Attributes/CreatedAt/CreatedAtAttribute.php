@@ -55,7 +55,7 @@ class CreatedAtAttribute extends BaseAttribute
      * Is a value valid ?
      *
      * @param \Railken\Laravel\Manager\Contracts\EntityContract $entity
-     * @param mixed          $value
+     * @param mixed                                             $value
      *
      * @return bool
      */

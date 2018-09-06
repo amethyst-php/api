@@ -1,4 +1,5 @@
 <?php
+
 namespace Railken\LaraOre\Api\Support\Testing;
 
 trait TestableTrait
@@ -8,7 +9,7 @@ trait TestableTrait
         if (!$check) {
             $check = $parameters;
         }
-        
+
         // GET /
         $response = $this->get($url, []);
         $this->assertOrPrint($url, $response, 200);

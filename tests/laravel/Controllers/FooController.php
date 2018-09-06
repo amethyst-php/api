@@ -2,10 +2,9 @@
 
 namespace Controllers;
 
-use Illuminate\Support\Facades\Config;
+use Foo\FooManager;
 use Railken\LaraOre\Api\Http\Controllers\RestController;
 use Railken\LaraOre\Api\Http\Controllers\Traits as RestTraits;
-use Foo\FooManager;
 
 class FooController extends RestController
 {
@@ -33,7 +32,7 @@ class FooController extends RestController
     {
         $this->manager = $manager;
         $this->manager->setAgent($this->getUser());
-        
+
         parent::__construct();
     }
 

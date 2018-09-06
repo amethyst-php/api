@@ -14,7 +14,7 @@ class FooManager extends ModelManager
      * @var string
      */
     public $entity = Foo::class;
-    
+
     /**
      * List of all attributes.
      *
