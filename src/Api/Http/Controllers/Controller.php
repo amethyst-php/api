@@ -13,11 +13,6 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function __construct()
-    {
-        $this->middleware(AcceptJsonMiddleware::class);
-    }
-
     /**
      * Return a new JSON response from the application.
      *

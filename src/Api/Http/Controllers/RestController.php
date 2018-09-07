@@ -136,7 +136,7 @@ abstract class RestController extends Controller
 
     public function getResourceBaseUrl(Request $request)
     {
-        return $request->getSchemeAndHttpHost().Config::get('ore.api.http.'.explode(".", Route::getCurrentRoute()->getName())[0].'.router.prefix');
+        return $request->getSchemeAndHttpHost().Config::get('ore.api.http.'.explode('.', Route::getCurrentRoute()->getName())[0].'.router.prefix');
     }
 
     public function getFractalManager(Request $request)
