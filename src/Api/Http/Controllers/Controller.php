@@ -19,14 +19,13 @@ class Controller extends BaseController
      * @param string|array $data
      * @param int          $status
      * @param array        $headers
-     * @param int          $options
      *
      * @return \Symfony\Component\HttpFoundation\Response
      * @static
      */
-    public function response($data = [], $status = 200, $headers = [], $options = 0)
+    public function response($data = [], $status = 200, $headers = [])
     {
-        return new JsonResponse($data, $status, $headers, $options);
+        return new JsonResponse($data, $status, $headers, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**

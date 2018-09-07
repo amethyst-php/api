@@ -5,9 +5,9 @@ namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 use Illuminate\Http\Request;
 use Railken\LaraEye\Filter;
 use Railken\LaraOre\Api\Support\Exceptions\InvalidSorterFieldException;
-use Railken\LaraOre\Api\Support\Paginator;
 use Railken\LaraOre\Api\Support\Sorter;
 use Railken\SQ\Exceptions\QuerySyntaxException;
+use Symfony\Component\HttpFoundation\Response;
 
 trait RestIndexTrait
 {
@@ -25,43 +25,42 @@ trait RestIndexTrait
 
     public function createIndexResponseByQuery($query, Request $request)
     {
-        // FilterSyntaxException
+        if ($request->input('sort')) {
+            $sorter = new Sorter();
+            $sorter->setKeys($this->keys->sortable->toArray());
 
-        // Sorter
-        $sort = new Sorter();
-        $sort->setKeys($this->keys->sortable->toArray());
+            try {
+                foreach (explode(',', $request->input('sort')) as $sort) {
+                    if (substr($sort, 0, 1) === '-') {
+                        $sorter->add(substr($sort, 1), 'desc');
+                    } else {
+                        $sorter->add($sort, 'asc');
+                    }
+                }
+            } catch (InvalidSorterFieldException $e) {
+                return $this->response(['errors' => [['code' => 'SORT_INVALID_FIELD', 'message' => 'Invalid field for sorting']]], Response::HTTP_BAD_REQUEST);
+            }
 
-        try {
-            $sort->add($request->input('sort_field', 'id'), strtolower($request->input('sort_direction', 'desc')));
-        } catch (InvalidSorterFieldException $e) {
-            return $this->error(['code' => 'SORT_INVALID_FIELD', 'message' => 'Invalid field for sorting']);
-        }
-
-        foreach ($sort->get() as $attribute) {
-            $query->orderBy($this->parseKey($attribute->getName()), $attribute->getDirection());
+            foreach ($sorter->get() as $attribute) {
+                $query->orderBy($this->parseKey($attribute->getName()), $attribute->getDirection());
+            }
         }
 
         $selectable = $this->getSelectedAttributesByRequest($request);
 
         try {
             if ($request->input('query')) {
-                $filter = new Filter($this->manager->newEntity()->getTable(), $selectable->toArray());
+                $filter = new Filter($this->manager->newEntity()->getTable(), $selectable);
                 $filter->build($query, $request->input('query'));
             }
         } catch (QuerySyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }
 
-        // Pagination
-        $paginator = new Paginator();
-        $paginator = $paginator->paginate($query->count(), $request->input('page', 1), $request->input('show', 10));
+        $result = $query->paginate($request->input('show', 10), ['*'], 'page', $request->input('page'));
 
-        $resources = $query
-            ->skip($paginator->get('skip'))
-            ->take($paginator->get('take'))
-            // ->select($selectable->toArray())
-            ->get();
+        $resources = $result->getCollection();
 
-        return $this->response($this->serializeCollection($resources, $request));
+        return $this->response($this->serializeCollection($resources, $request, $result));
     }
 }
