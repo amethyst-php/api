@@ -16,8 +16,6 @@ class Controller extends BaseController
     public function __construct()
     {
         $this->middleware(AcceptJsonMiddleware::class);
-
-        parent::__construct();
     }
 
     /**
