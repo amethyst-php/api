@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use League\Fractal;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\JsonApiSerializer;
 use Railken\Bag;
 use Railken\LaraOre\Api\Contracts\TransformerContract;
@@ -178,12 +179,13 @@ abstract class RestController extends Controller
         return $this->getFractalManager($request)->createData($resource)->toArray();
     }
 
-    public function serializeCollection(Collection $collection, Request $request)
+    public function serializeCollection(Collection $collection, Request $request, $paginator)
     {
         $transformer = $this->getFractalTransformer();
         $transformer = $this->initializeFractalTransformer($transformer, $collection->get(0, null), $request);
 
         $resource = new Fractal\Resource\Collection($collection, $transformer, $this->getResourceName());
+        $resource->setPaginator(new IlluminatePaginatorAdapter($paginator));
 
         return $this->getFractalManager($request)->createData($resource)->toArray();
     }
