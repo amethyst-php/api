@@ -17,8 +17,15 @@ class Paginator
     {
         $take = (int) $take;
         $page = (int) $page;
-        $take <= 0 && $take = 10;
-        $page <= 0 && $page = 1;
+
+        if ($take <= 0) {
+            $take = 10;
+        }
+
+        if ($page <= 0) {
+            $page = 1;
+        }
+
         $skip = ($page - 1) * $take;
         $last = $skip + $take;
         $first = $skip + 1;

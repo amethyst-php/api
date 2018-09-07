@@ -3,6 +3,7 @@
 namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 trait RestRemoveTrait
 {
@@ -16,34 +17,18 @@ trait RestRemoveTrait
      */
     public function remove($id, Request $request)
     {
-        $resource = $this->manager->getRepository()->findOneById($id);
+        $entity = $this->manager->getRepository()->findOneById($id);
 
-        if (!$resource) {
-            return $this->not_found();
+        if (!$entity) {
+            return $this->response(null, Response::HTTP_NOT_FOUND);
         }
 
-        $before = $this->manager->serializer->serialize($resource)->toArray();
+        $result = $this->manager->remove($entity);
 
-        $result = $this->manager->remove($resource);
-
-        if ($result->ok()) {
-            /*$m = new \Railken\LaraOre\Core\Log\LogManager();
-            $m->create([
-                'type'     => 'api',
-                'category' => 'remove',
-                'message'  => null,
-                'vars'     => [
-                    'entity_class' => $this->manager->getRepository()->getEntity(),
-                    'entity_id'    => $resource->id,
-                    'before'       => $before,
-                    'after'        => null,
-                    'user_id'      => $this->getUser()->id,
-                ],
-            ]);*/
-
-            return $this->success(['message' => 'ok'], 204);
+        if (!$result->ok()) {
+            return $this->response(['errors' => $result->getSimpleErrors()], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->error(['errors' => $result->getSimpleErrors()]);
+        return $this->response(null, Response::HTTP_NO_CONTENT);
     }
 }

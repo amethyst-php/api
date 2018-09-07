@@ -41,18 +41,7 @@ trait RestIndexTrait
             $query->orderBy($this->parseKey($attribute->getName()), $attribute->getDirection());
         }
 
-        // Select
-        $select = collect(explode(',', $request->input('select', '')));
-
-        $select->count() > 0 &&
-            $select = $this->keys->selectable->filter(function ($attr) use ($select) {
-                return $select->contains($attr);
-            });
-
-        $select->count() == 0 &&
-            $select = $this->keys->selectable;
-
-        $selectable = $select;
+        $selectable = $this->getSelectedAttributesByRequest($request);
 
         try {
             if ($request->input('query')) {
@@ -73,17 +62,6 @@ trait RestIndexTrait
             // ->select($selectable->toArray())
             ->get();
 
-        $response = $this->success([
-            'resources' => $resources->map(function ($record) use ($select) {
-                return $this->serialize($record, $select);
-            }),
-            'select'     => $select->values(),
-            'pagination' => $paginator->all(),
-            'sort'       => $sort->get()->map(function ($attribute) {
-                return ['name' => $attribute->getName(), 'value' => $attribute->getDirection()];
-            })->toArray(),
-        ]);
-
-        return $response;
+        return $this->response($this->serializeCollection($resources, $request));
     }
 }

@@ -2,36 +2,26 @@
 
 namespace Railken\LaraOre\Api\Support;
 
-use Illuminate\Support\Collection;
-
 class Sorter
 {
     /**
      * List of sorting values.
      *
-     * @var Collection
+     * @var array
      */
     protected $values;
 
     /**
      * List of sorting keys.
      *
-     * @var Collection
+     * @var array
      */
     protected $keys;
 
     /**
-     * Construct.
-     */
-    public function __construct()
-    {
-        $this->values = new Collection();
-    }
-
-    /**
      * Set keys.
      *
-     * @param Collection $keys
+     * @param array $keys
      *
      * @return $this
      */
@@ -68,7 +58,7 @@ class Sorter
     /**
      * Retrieve all sorting values.
      *
-     * @return Collection
+     * @return array
      */
     public function get()
     {

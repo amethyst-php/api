@@ -3,6 +3,7 @@
 namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 trait RestShowTrait
 {
@@ -16,14 +17,12 @@ trait RestShowTrait
      */
     public function show($id, Request $request)
     {
-        $resource = $this->manager->getRepository()->findOneById($id);
+        $entity = $this->manager->getRepository()->findOneById($id);
 
-        if (!$resource) {
-            return $this->not_found();
+        if (!$entity) {
+            return $this->response(null, Response::HTTP_NOT_FOUND);
         }
 
-        return $this->success([
-            'resource' => $this->manager->serializer->serialize($resource, $this->keys->selectable)->all(),
-        ]);
+        return $this->response($this->serialize($entity, $request), Response::HTTP_OK);
     }
 }

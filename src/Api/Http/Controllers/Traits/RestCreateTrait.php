@@ -3,6 +3,7 @@
 namespace Railken\LaraOre\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 trait RestCreateTrait
 {
@@ -19,28 +20,10 @@ trait RestCreateTrait
 
         $result = $manager->create($request->only($this->keys->fillable));
 
-        if ($result->ok()) {
-            /*$m = new \Railken\LaraOre\Core\Log\LogManager();
-            $m->create([
-                'type'     => 'api',
-                'category' => 'create',
-                'message'  => null,
-                'vars'     => [
-                    'entity_class' => $manager->getRepository()->getEntity(),
-                    'entity_id'    => $result->getResource()->id,
-                    'before'       => [],
-                    'after'        => $manager->serializer->serialize($result->getResource())->toArray(),
-                    'user_id'      => $this->getUser()->id,
-                ],
-            ]);*/
-
-            return $this->success([
-                'resource' => $manager->serializer->serialize($result->getResource(), $this->keys->selectable)->all(),
-            ], 201);
+        if (!$result->ok()) {
+            return $this->response(['errors' => $result->getSimpleErrors()], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->error([
-            'errors' => $result->getSimpleErrors(),
-        ]);
+        return $this->response($this->serialize($result->getResource(), $request), Response::HTTP_CREATED);
     }
 }

@@ -1,13 +1,17 @@
 <?php
 
 return [
-    'router' => [
-        'prefix' => 'api/v1/ore',
-    ],
     'http' => [
+        'app' => [
+            'router'     => [
+                'as'   => 'app.',
+                'prefix' => '/api/v1/ore',
+            ],
+        ],
         'admin' => [
             'router' => [
-                'prefix' => 'admin/',
+                'as'   => 'admin.',
+                'prefix' => '/api/v1/ore/admin',
             ],
         ],
     ],
