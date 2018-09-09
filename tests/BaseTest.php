@@ -29,6 +29,18 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
             $table->softDeletes();
         });
 
+        config(['ore.faker' => [
+            'http' => [
+                'admin' => [
+                    'enabled'    => true,
+                    'controller' => FooController::class,
+                    'router'     => [
+                        'prefix'      => '/foo',
+                    ],
+                ],
+            ],
+        ]]);
+
         Router::group('admin', ['prefix' => 'foo'], function ($router) {
             $controller = FooController::class;
 

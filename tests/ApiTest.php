@@ -2,15 +2,31 @@
 
 namespace Railken\LaraOre\Api\Tests;
 
-use Railken\Bag;
-use Railken\LaraOre\Api\Support\Testing\TestableTrait;
+use Foo\FooFaker;
+use Railken\LaraOre\Api\Support\Testing\TestableBaseTrait;
 
 class ApiTest extends BaseTest
 {
-    use TestableTrait;
+    use TestableBaseTrait;
 
-    public function testBase()
-    {
-        $this->commonTest('/api/v1/ore/admin/foo', new Bag(['name' => 'foo']));
-    }
+    /**
+     * Faker class.
+     *
+     * @var string
+     */
+    protected $faker = FooFaker::class;
+
+    /**
+     * Router group resource.
+     *
+     * @var string
+     */
+    protected $group = 'admin';
+
+    /**
+     * Base path config.
+     *
+     * @var string
+     */
+    protected $config = 'ore.faker';
 }
