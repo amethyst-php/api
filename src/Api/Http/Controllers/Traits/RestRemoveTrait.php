@@ -17,7 +17,7 @@ trait RestRemoveTrait
      */
     public function remove($id, Request $request)
     {
-        $entity = $this->manager->getRepository()->findOneById($id);
+        $entity = $this->getQuery()->where('id', $id)->first();
 
         if (!$entity) {
             return $this->response(null, Response::HTTP_NOT_FOUND);
