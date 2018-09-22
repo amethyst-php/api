@@ -8,11 +8,33 @@ use Symfony\Component\HttpFoundation\Response;
 trait TestableBaseTrait
 {
     /**
+     * Retrieve routes enabled.
+     *
+     * @return array
+     */
+    public function getRoutes()
+    {
+        return property_exists($this, 'routes') ? $this->routes : ['index', 'show', 'create', 'update', 'remove'];
+    }
+
+    /**
+     * Check route.
+     *
+     * @param string $route
+     *
+     * @return bool
+     */
+    public function checkRoute(string $name): bool
+    {
+        return in_array($name, $this->getRoutes());
+    }
+
+    /**
      * Retrieve basic url.
      *
      * @return string
      */
-    public function getBaseUrl()
+    public function getBaseUrl(): string
     {
         return Config::get('ore.api.http.'.$this->group.'.router.prefix');
     }
@@ -22,7 +44,7 @@ trait TestableBaseTrait
      *
      * @return string
      */
-    public function getResourceUrl()
+    public function getResourceUrl(): string
     {
         return $this->getBaseUrl().Config::get($this->config.'.http.'.$this->group.'.router.prefix');
     }
@@ -33,6 +55,22 @@ trait TestableBaseTrait
     public function testSuccessCommon()
     {
         $this->commonTest($this->getResourceUrl(), $this->faker::make()->parameters());
+    }
+
+    /**
+     * Retrieve a resource.
+     *
+     * @param string $url
+     */
+    public function retrieveResource(string $url)
+    {
+        if (!$this->checkRoute('index')) {
+            throw new \Exception('Index route should be enabled to retrieve a resource for update, remove and show');
+        }
+
+        $response = $this->callAndTest('GET', $url, [], Response::HTTP_OK);
+
+        return json_decode($response->getContent())->data[0];
     }
 
     /**
@@ -52,17 +90,29 @@ trait TestableBaseTrait
             'Accept'       => 'application/json',
         ]);
 
-        $response = $this->callAndTest('POST', $url, $parameters->toArray(), Response::HTTP_CREATED);
-        $resource = json_decode($response->getContent())->data;
+        if ($this->checkRoute('create')) {
+            $response = $this->callAndTest('POST', $url, $parameters->toArray(), Response::HTTP_CREATED);
+        }
 
-        $response = $this->callAndTest('GET', $url, [], Response::HTTP_OK);
-        $response = $this->callAndTest('GET', $url, ['query' => 'id eq 1'], Response::HTTP_OK);
-        $response = $this->callAndTest('GET', $url.'/'.$resource->id, [], Response::HTTP_OK);
-        $response = $this->callAndTest('PUT', $url.'/'.$resource->id, $parameters->toArray(), Response::HTTP_OK);
-        $resource = json_decode($response->getContent())->data;
+        if ($this->checkRoute('index')) {
+            $response = $this->callAndTest('GET', $url, [], Response::HTTP_OK);
+            $response = $this->callAndTest('GET', $url, ['query' => 'id eq 1'], Response::HTTP_OK);
+        }
 
-        $response = $this->callAndTest('DELETE', $url.'/'.$resource->id, [], Response::HTTP_NO_CONTENT);
-        $response = $this->callAndTest('GET', $url.'/'.$resource->id, [], Response::HTTP_NOT_FOUND);
+        if ($this->checkRoute('show')) {
+            $resource = $this->retrieveResource($url);
+            $response = $this->callAndTest('GET', $url.'/'.$resource->id, [], Response::HTTP_OK);
+        }
+
+        if ($this->checkRoute('update')) {
+            $resource = $this->retrieveResource($url);
+            $response = $this->callAndTest('PUT', $url.'/'.$resource->id, $parameters->toArray(), Response::HTTP_OK);
+        }
+
+        if ($this->checkRoute('remove')) {
+            $resource = $this->retrieveResource($url);
+            $response = $this->callAndTest('DELETE', $url.'/'.$resource->id, [], Response::HTTP_NO_CONTENT);
+        }
     }
 
     /**
