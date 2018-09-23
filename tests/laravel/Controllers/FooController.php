@@ -2,9 +2,9 @@
 
 namespace Controllers;
 
-use Foo\FooManager;
-use Railken\LaraOre\Api\Http\Controllers\RestController;
-use Railken\LaraOre\Api\Http\Controllers\Traits as RestTraits;
+use Foo;
+use Railken\Amethyst\Api\Http\Controllers\RestController;
+use Railken\Amethyst\Api\Http\Controllers\Traits as RestTraits;
 
 class FooController extends RestController
 {
@@ -14,6 +14,11 @@ class FooController extends RestController
     use RestTraits\RestShowTrait;
     use RestTraits\RestRemoveTrait;
 
+    /**
+     * The attributes that are queryable.
+     *
+     * @var array
+     */
     public $queryable = [
         'id',
         'name',
@@ -21,6 +26,11 @@ class FooController extends RestController
         'updated_at',
     ];
 
+    /**
+     * The attributes that are fillable.
+     *
+     * @var array
+     */
     public $fillable = [
         'name',
     ];
@@ -28,20 +38,10 @@ class FooController extends RestController
     /**
      * Construct.
      */
-    public function __construct(FooManager $manager)
+    public function __construct()
     {
-        $this->manager = $manager;
+        $this->manager = new Foo\Manager();
 
         parent::__construct();
-    }
-
-    /**
-     * Create a new instance for query.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public function getQuery()
-    {
-        return $this->manager->repository->getQuery();
     }
 }

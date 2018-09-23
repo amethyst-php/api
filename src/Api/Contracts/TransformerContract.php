@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Contracts;
+namespace Railken\Amethyst\Api\Contracts;
 
 interface TransformerContract
 {

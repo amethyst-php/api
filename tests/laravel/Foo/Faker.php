@@ -4,15 +4,10 @@ namespace Foo;
 
 use Faker\Factory;
 use Railken\Bag;
-use Railken\Laravel\Manager\BaseFaker;
+use Railken\Lem\Faker as BaseFaker;
 
-class FooFaker extends BaseFaker
+class Faker extends BaseFaker
 {
-    /**
-     * @var string
-     */
-    protected $manager = FooManager::class;
-
     /**
      * @return \Railken\Bag
      */

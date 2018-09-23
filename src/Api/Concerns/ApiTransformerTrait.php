@@ -1,9 +1,9 @@
 <?php
 
-namespace Railken\LaraOre\Api\Concerns;
+namespace Railken\Amethyst\Api\Concerns;
 
 use Railken\Bag;
-use Railken\Laravel\Manager\Contracts\EntityContract;
+use Railken\Lem\Contracts\EntityContract;
 
 trait ApiTransformerTrait
 {

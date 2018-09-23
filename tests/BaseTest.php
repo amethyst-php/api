@@ -1,12 +1,12 @@
 <?php
 
-namespace Railken\LaraOre\Api\Tests;
+namespace Railken\Amethyst\Tests;
 
 use Controllers\FooController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use Railken\LaraOre\Api\Support\Router;
+use Railken\Amethyst\Api\Support\Router;
 
 abstract class BaseTest extends \Orchestra\Testbench\TestCase
 {
@@ -59,7 +59,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            \Railken\LaraOre\ApiServiceProvider::class,
+            \Railken\Amethyst\ApiServiceProvider::class,
         ];
     }
 }

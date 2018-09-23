@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Http\Controllers\Traits\ManyToMany;
+namespace Railken\Amethyst\Api\Http\Controllers\Traits\ManyToMany;
 
 use Illuminate\Http\Request;
 use Railken\Bag;

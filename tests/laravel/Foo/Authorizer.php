@@ -2,10 +2,10 @@
 
 namespace Foo;
 
-use Railken\Laravel\Manager\ModelAuthorizer;
-use Railken\Laravel\Manager\Tokens;
+use Railken\Lem\Authorizer as BaseAuthorizer;
+use Railken\Lem\Tokens;
 
-class FooAuthorizer extends ModelAuthorizer
+class Authorizer extends BaseAuthorizer
 {
     /**
      * List of all permissions.

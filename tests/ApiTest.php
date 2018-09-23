@@ -1,9 +1,9 @@
 <?php
 
-namespace Railken\LaraOre\Api\Tests;
+namespace Railken\Amethyst\Tests;
 
-use Foo\FooFaker;
-use Railken\LaraOre\Api\Support\Testing\TestableBaseTrait;
+use Foo;
+use Railken\Amethyst\Api\Support\Testing\TestableBaseTrait;
 
 class ApiTest extends BaseTest
 {
@@ -14,7 +14,7 @@ class ApiTest extends BaseTest
      *
      * @var string
      */
-    protected $faker = FooFaker::class;
+    protected $faker = Foo\Faker::class;
 
     /**
      * Router group resource.

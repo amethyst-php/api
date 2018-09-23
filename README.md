@@ -1,9 +1,9 @@
-# lara-ore-api
+# Amethyst - Api
 
-[![Build Status](https://travis-ci.org/railken/lara-ore-api.svg?branch=master)](https://travis-ci.org/railken/lara-ore-api)
+[![Build Status](https://travis-ci.org/railken/amethyst-api.svg?branch=master)](https://travis-ci.org/railken/amethyst-api)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is a [lara-ore](https://github.com/railken/lara-ore) package
+This is a [amethyst](https://github.com/railken/amethyst) package
 
 # Requirements
 
@@ -14,7 +14,7 @@ PHP 7.1 and later.
 You can install it via [Composer](https://getcomposer.org/) by typing the following command:
 
 ```bash
-composer require railken/lara-ore-api
+composer require railken/amethyst-api
 ```
 
 The package will automatically register itself.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Http\Controllers;
+namespace Railken\Amethyst\Api\Http\Controllers;
 
 use Illuminate\Support\Facades\Config;
 

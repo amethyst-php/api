@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Http\Controllers\Traits;
+namespace Railken\Amethyst\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

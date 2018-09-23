@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Support\Testing;
+namespace Railken\Amethyst\Api\Support\Testing;
 
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Support\Testing;
+namespace Railken\Amethyst\Api\Support\Testing;
 
 trait TestableTrait
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Railken\LaraOre\Api\Http\Controllers\Traits;
+namespace Railken\Amethyst\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Railken\LaraOre\Api\Support\Paginator;
-use Railken\LaraOre\Api\Support\Sorter;
+use Railken\Amethyst\Api\Support\Paginator;
+use Railken\Amethyst\Api\Support\Sorter;
 use Railken\Laravel\ApiHelpers\Filter;
 use Railken\SQ\Exceptions\QuerySyntaxException;
 

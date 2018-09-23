@@ -1,10 +1,10 @@
 <?php
 
-namespace Railken\LaraOre\Api\Transformers;
+namespace Railken\Amethyst\Api\Transformers;
 
 use League\Fractal\TransformerAbstract;
-use Railken\LaraOre\Api\Concerns\ApiTransformerTrait;
-use Railken\LaraOre\Api\Contracts\TransformerContract;
+use Railken\Amethyst\Api\Concerns\ApiTransformerTrait;
+use Railken\Amethyst\Api\Contracts\TransformerContract;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {

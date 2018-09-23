@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Http\Controllers;
+namespace Railken\Amethyst\Api\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Route;
 use League\Fractal;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\JsonApiSerializer;
+use Railken\Amethyst\Api\Contracts\TransformerContract;
+use Railken\Amethyst\Api\Transformers\BaseTransformer;
 use Railken\Bag;
-use Railken\LaraOre\Api\Contracts\TransformerContract;
-use Railken\LaraOre\Api\Transformers\BaseTransformer;
-use Railken\Laravel\Manager\Contracts\EntityContract;
-use Railken\Laravel\Manager\Tokens;
+use Railken\Lem\Contracts\EntityContract;
+use Railken\Lem\Tokens;
 
 abstract class RestController extends Controller
 {
@@ -34,7 +34,7 @@ abstract class RestController extends Controller
     public $keys;
 
     /**
-     * @var \Railken\Laravel\Manager\Contracts\ManagerContract
+     * @var \Railken\Lem\Contracts\ManagerContract
      */
     public $manager;
 
@@ -83,7 +83,7 @@ abstract class RestController extends Controller
     /**
      * Return a new instance of Manager.
      *
-     * @return \Railken\Laravel\Manager\Contracts\ManagerContract
+     * @return \Railken\Lem\Contracts\ManagerContract
      */
     public function getManager()
     {

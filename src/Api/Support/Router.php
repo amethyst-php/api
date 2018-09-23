@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\LaraOre\Api\Support;
+namespace Railken\Amethyst\Api\Support;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
