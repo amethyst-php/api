@@ -1,12 +1,12 @@
 <?php
 
-namespace Foo;
+namespace App\Serializers;
 
 use Illuminate\Support\Collection;
 use Railken\Lem\Contracts\EntityContract;
-use Railken\Lem\Serializer as BaseSerializer;
+use Railken\Lem\Serializer;
 
-class Serializer extends BaseSerializer
+class FooSerializer extends Serializer
 {
     /**
      * Serialize entity.

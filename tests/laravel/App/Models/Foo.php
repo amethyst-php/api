@@ -1,12 +1,12 @@
 <?php
 
-namespace Foo;
+namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
 
-class Model extends BaseModel implements EntityContract
+class Foo extends Model implements EntityContract
 {
     use SoftDeletes;
 
@@ -22,12 +22,17 @@ class Model extends BaseModel implements EntityContract
      *
      * @var array
      */
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name',
+        'description',
+    ];
 
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    protected $dates = [
+        'deleted_at',
+    ];
 }

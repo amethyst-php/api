@@ -2,7 +2,7 @@
 
 namespace Railken\Amethyst\Tests;
 
-use Controllers\FooController;
+use App\Controllers\FooController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;

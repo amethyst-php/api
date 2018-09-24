@@ -1,11 +1,11 @@
 <?php
 
-namespace Foo;
+namespace App\Authorizers;
 
-use Railken\Lem\Authorizer as BaseAuthorizer;
+use Railken\Lem\Authorizer;
 use Railken\Lem\Tokens;
 
-class Authorizer extends BaseAuthorizer
+class FooAuthorizer extends Authorizer
 {
     /**
      * List of all permissions.

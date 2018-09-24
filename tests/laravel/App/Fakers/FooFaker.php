@@ -1,12 +1,12 @@
 <?php
 
-namespace Foo;
+namespace App\Fakers;
 
 use Faker\Factory;
 use Railken\Bag;
-use Railken\Lem\Faker as BaseFaker;
+use Railken\Lem\Faker;
 
-class Faker extends BaseFaker
+class FooFaker extends Faker
 {
     /**
      * @return \Railken\Bag
@@ -17,6 +17,7 @@ class Faker extends BaseFaker
 
         $bag = new Bag();
         $bag->set('name', $faker->name);
+        $bag->set('description', $faker->text);
 
         return $bag;
     }

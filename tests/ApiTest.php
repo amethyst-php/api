@@ -2,7 +2,7 @@
 
 namespace Railken\Amethyst\Tests;
 
-use Foo;
+use App\Fakers\FooFaker;
 use Railken\Amethyst\Api\Support\Testing\TestableBaseTrait;
 
 class ApiTest extends BaseTest
@@ -14,7 +14,7 @@ class ApiTest extends BaseTest
      *
      * @var string
      */
-    protected $faker = Foo\Faker::class;
+    protected $faker = FooFaker::class;
 
     /**
      * Router group resource.

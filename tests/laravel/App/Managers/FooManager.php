@@ -1,12 +1,19 @@
 <?php
 
-namespace Foo;
+namespace App\Managers;
 
 use Railken\Lem\Attributes;
-use Railken\Lem\Manager as BaseManager;
+use Railken\Lem\Manager;
 
-class Manager extends BaseManager
+class FooManager extends Manager
 {
+    /**
+     * Describe this manager.
+     *
+     * @var string
+     */
+    public $comment = '...';
+
     /**
      * List of all attributes.
      *

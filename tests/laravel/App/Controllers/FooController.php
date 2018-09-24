@@ -1,8 +1,8 @@
 <?php
 
-namespace Controllers;
+namespace App\Controllers;
 
-use Foo;
+use App\Managers\FooManager;
 use Railken\Amethyst\Api\Http\Controllers\RestController;
 use Railken\Amethyst\Api\Http\Controllers\Traits as RestTraits;
 
@@ -38,9 +38,9 @@ class FooController extends RestController
     /**
      * Construct.
      */
-    public function __construct()
+    public function __construct(FooManager $manager)
     {
-        $this->manager = new Foo\Manager();
+        $this->manager = $manager;
 
         parent::__construct();
     }
