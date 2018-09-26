@@ -150,7 +150,6 @@ trait TestableBaseTrait
         print_r(sprintf("\n%s %s", $method, $url));
         print_r(sprintf("\n\nParameters Sent:\n%s", json_encode($parameters, JSON_PRETTY_PRINT)));
         print_r(sprintf("\n\nResponse Status Code: %s", $response->getStatusCode()));
-        print_r($response->getContent());
         print_r(sprintf("\n\nResponse Body:\n%s\n", json_encode(json_decode($response->getContent()), JSON_PRETTY_PRINT)));
     }
 }
