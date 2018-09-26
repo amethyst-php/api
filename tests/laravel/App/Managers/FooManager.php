@@ -27,7 +27,6 @@ class FooManager extends Manager
             Attributes\TextAttribute::make('description')->setMaxLength(4096),
             Attributes\CreatedAtAttribute::make(),
             Attributes\UpdatedAtAttribute::make(),
-            Attributes\DeletedAtAttribute::make(),
         ];
     }
 }

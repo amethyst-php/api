@@ -25,6 +25,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
         Schema::create('foo', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
