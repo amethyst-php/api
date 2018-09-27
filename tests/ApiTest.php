@@ -28,5 +28,5 @@ class ApiTest extends BaseTest
      *
      * @var string
      */
-    protected $config = 'ore.faker';
+    protected $config = 'ore.faker.http.admin';
 }

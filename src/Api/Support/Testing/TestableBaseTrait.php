@@ -46,7 +46,7 @@ trait TestableBaseTrait
      */
     public function getResourceUrl(): string
     {
-        return $this->getBaseUrl().Config::get($this->config.'.http.'.$this->group.'.router.prefix');
+        return $this->getBaseUrl().Config::get($this->config.'.router.prefix');
     }
 
     /**
