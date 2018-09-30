@@ -2,6 +2,8 @@
 
 namespace Railken\Amethyst\Api\Http\Controllers;
 
+use Railken\Lem\Attributes;
+
 abstract class RestManagerController extends RestController
 {
     /**
@@ -24,9 +26,21 @@ abstract class RestManagerController extends RestController
 
         $this->queryable = array_merge($this->queryable, $this->manager->getAttributes()->keys()->toArray());
 
-        $this->fillable = array_merge($this->fillable, $this->manager->getAttributes()->filter(function ($attribute) {
+        $fillable = [];
+
+        $attributes = $this->manager->getAttributes()->filter(function ($attribute) {
             return $attribute->getFillable();
-        })->keys()->toArray());
+        });
+
+        foreach ($attributes as $attribute) {
+            if ($attribute instanceof Attributes\BelongsToAttribute) {
+                $fillable = array_merge($fillable, [$attribute->getRelationName(), $attribute->getName()]);
+            } else {
+                $fillable[] = $attribute->getName();
+            }
+        }
+
+        $this->fillable = array_merge($this->fillable, $fillable);
 
         $this->manager->setAgent($this->getUser());
 
