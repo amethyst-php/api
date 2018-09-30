@@ -36,7 +36,7 @@ trait TestableBaseTrait
      */
     public function getBaseUrl(): string
     {
-        return Config::get('ore.api.http.'.$this->group.'.router.prefix');
+        return Config::get('amethyst.api.http.'.$this->group.'.router.prefix');
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst;
+namespace Railken\Amethyst\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +12,7 @@ class ApiServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../config/ore.api.php' => config_path('ore.api.php'),
+            __DIR__.'/../../config/amethyst.api.php' => config_path('amethyst.api.php'),
         ], 'config');
     }
 
@@ -22,6 +22,6 @@ class ApiServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(\Railken\Lem\Providers\ManagerServiceProvider::class);
-        $this->mergeConfigFrom(__DIR__.'/../config/ore.api.php', 'ore.api');
+        $this->mergeConfigFrom(__DIR__.'/../../config/amethyst.api.php', 'amethyst.api');
     }
 }

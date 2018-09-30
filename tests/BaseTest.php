@@ -60,7 +60,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            \Railken\Amethyst\ApiServiceProvider::class,
+            \Railken\Amethyst\Providers\ApiServiceProvider::class,
         ];
     }
 }
