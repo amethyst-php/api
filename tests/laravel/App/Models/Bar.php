@@ -3,16 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Railken\Lem\Contracts\EntityContract;
 
-class Foo extends Model implements EntityContract
+class Bar extends Model implements EntityContract
 {
+    use SoftDeletes;
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'foo';
+    protected $table = 'bar';
 
     /**
      * The attributes that are mass assignable.
@@ -25,10 +28,11 @@ class Foo extends Model implements EntityContract
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
      */
-    public function bar()
-    {
-        return $this->belongsTo(Bar::class);
-    }
+    protected $dates = [
+        'deleted_at',
+    ];
 }

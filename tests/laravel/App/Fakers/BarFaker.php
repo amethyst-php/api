@@ -6,7 +6,7 @@ use Faker\Factory;
 use Railken\Bag;
 use Railken\Lem\Faker;
 
-class FooFaker extends Faker
+class BarFaker extends Faker
 {
     /**
      * @return \Railken\Bag
@@ -18,7 +18,6 @@ class FooFaker extends Faker
         $bag = new Bag();
         $bag->set('name', $faker->name);
         $bag->set('description', $faker->text);
-        $bag->set('bar', BarFaker::make()->parameters()->toArray());
 
         return $bag;
     }

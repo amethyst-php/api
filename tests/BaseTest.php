@@ -26,6 +26,17 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
             $table->increments('id');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
+            $table->integer('bar_id')->unsigned();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::dropIfExists('bar');
+
+        Schema::create('bar', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

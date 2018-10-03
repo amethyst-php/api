@@ -46,11 +46,11 @@ trait RestIndexTrait
             }
         }
 
-        $selectable = $this->getSelectedAttributesByRequest($request);
+        // $selectable = $this->getSelectedAttributesByRequest($request);
 
         try {
             if ($request->input('query')) {
-                $filter = new Filter($this->manager->newEntity()->getTable(), $selectable);
+                $filter = new Filter($this->manager->newEntity()->getTable(), $this->queryable);
                 $filter->build($query, $request->input('query'));
             }
         } catch (QuerySyntaxException $e) {

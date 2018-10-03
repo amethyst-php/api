@@ -3,6 +3,7 @@
 namespace Railken\Amethyst\Api\Support\Testing;
 
 use Illuminate\Support\Facades\Config;
+use Railken\Lem\Attributes\BelongsToAttribute;
 use Symfony\Component\HttpFoundation\Response;
 
 trait TestableBaseTrait
@@ -96,13 +97,13 @@ trait TestableBaseTrait
         }
 
         if ($this->checkRoute('index')) {
-            $response = $this->callAndTest('GET', $url, [], Response::HTTP_OK);
-            $response = $this->callAndTest('GET', $url, ['query' => 'id eq 1'], Response::HTTP_OK);
+            $response = $this->callAndTest('GET', $url, array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
+            $response = $this->callAndTest('GET', $url, array_merge($this->getDefaultGetParameters(), ['query' => 'id eq 1']), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('show')) {
             $resource = $this->retrieveResource($url);
-            $response = $this->callAndTest('GET', $url.'/'.$resource->id, [], Response::HTTP_OK);
+            $response = $this->callAndTest('GET', $url.'/'.$resource->id, array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('update')) {
@@ -114,6 +115,25 @@ trait TestableBaseTrait
             $resource = $this->retrieveResource($url);
             $response = $this->callAndTest('DELETE', $url.'/'.$resource->id, [], Response::HTTP_NO_CONTENT);
         }
+    }
+
+    /**
+     * Retrieve default parameters.
+     *
+     * @return array
+     */
+    public function getDefaultGetParameters()
+    {
+        $controller = $this->app->make(Config::get($this->config.'.controller'));
+        $attributes = $controller->getManager()->getAttributes()->filter(function ($attribute) {
+            return $attribute instanceof BelongsToAttribute;
+        })->map(function ($attribute) {
+            return $attribute->getRelationName();
+        });
+
+        return [
+            'include' => $attributes->implode(','),
+        ];
     }
 
     /**

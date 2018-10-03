@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Route;
 use League\Fractal;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\JsonApiSerializer;
-use Railken\Amethyst\Api\Contracts\TransformerContract;
+use League\Fractal\TransformerAbstract;
 use Railken\Amethyst\Api\Transformers\BaseTransformer;
 use Railken\Bag;
 use Railken\Lem\Contracts\EntityContract;
-use Railken\Lem\Tokens;
 
 abstract class RestController extends Controller
 {
@@ -118,28 +117,40 @@ abstract class RestController extends Controller
         return $this->getManager()->getRepository()->getQuery();
     }
 
-    public function getFractalTransformer()
+    /**
+     * Create a new instance of fractal transformer.
+     *
+     * @param \Railken\Lem\Contracts\EntityContract $entity
+     * @param \Illuminate\Http\Request              $request
+     *
+     * @return TransformerAbstract
+     */
+    public function getFractalTransformer(EntityContract $entity, Request $request): TransformerAbstract
     {
         $classTransformer = $this->transformerClass;
 
-        return new $classTransformer();
+        return new $classTransformer($this->getManager(), $entity, $request);
     }
 
-    public function initializeFractalTransformer(TransformerContract $transformer, EntityContract $entity = null, Request $request)
-    {
-        if ($entity !== null) {
-            $transformer->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
-            $transformer->setAuthorizedAttributes($this->getManager()->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
-        }
-
-        return $transformer;
-    }
-
-    public function getResourceBaseUrl(Request $request)
+    /**
+     * Retrieve url base.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return string
+     */
+    public function getResourceBaseUrl(Request $request): string
     {
         return $request->getSchemeAndHttpHost().Config::get('ore.api.http.'.explode('.', Route::getCurrentRoute()->getName())[0].'.router.prefix');
     }
 
+    /**
+     * Retrieve fractal manager.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return Fractal\Manager;
+     */
     public function getFractalManager(Request $request)
     {
         $manager = new Fractal\Manager();
@@ -152,37 +163,35 @@ abstract class RestController extends Controller
         return $manager;
     }
 
-    public function getSelectedAttributesByRequest(Request $request)
-    {
-        $select = collect(explode(',', strval($request->input('select', ''))));
-
-        if ($select->count() > 0) {
-            $select = $this->keys->get('selectable')->filter(function ($attr) use ($select) {
-                return $select->contains($attr);
-            });
-        }
-
-        if ($select->count() == 0) {
-            $select = $this->keys->get('selectable');
-        }
-
-        return $select->toArray();
-    }
-
+    /**
+     * Serialize entity.
+     *
+     * @param \Railken\Lem\Contracts\EntityContract $entity
+     * @param \Illuminate\Http\Request              $request
+     *
+     * @return array
+     */
     public function serialize(EntityContract $entity, Request $request)
     {
-        $transformer = $this->getFractalTransformer();
-        $transformer = $this->initializeFractalTransformer($transformer, $entity, $request);
+        $transformer = $this->getFractalTransformer($entity, $request);
 
         $resource = new Fractal\Resource\Item($entity, $transformer, $this->getResourceName());
 
         return $this->getFractalManager($request)->createData($resource)->toArray();
     }
 
+    /**
+     * Serialize a collection.
+     *
+     * @param Collection               $collection
+     * @param \Illuminate\Http\Request $request
+     * @param mixed                    $paginator
+     *
+     * @return array
+     */
     public function serializeCollection(Collection $collection, Request $request, $paginator)
     {
-        $transformer = $this->getFractalTransformer();
-        $transformer = $this->initializeFractalTransformer($transformer, $collection->get(0, null), $request);
+        $transformer = $this->getFractalTransformer($collection->get(0, null), $request);
 
         $resource = new Fractal\Resource\Collection($collection, $transformer, $this->getResourceName());
         $resource->setPaginator(new IlluminatePaginatorAdapter($paginator));

@@ -24,7 +24,7 @@ abstract class RestManagerController extends RestController
 
         $this->manager = new $class();
 
-        $this->queryable = array_merge($this->queryable, $this->manager->getAttributes()->keys()->toArray());
+        $this->queryable = !empty($this->queryable) ? $this->queryable : $this->manager->getAttributes()->keys()->toArray();
 
         $fillable = [];
 
