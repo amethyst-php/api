@@ -122,6 +122,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $relation = $entity->{$relationName};
 
-        return $this->item($relation, new BaseTransformer($attribute->getRelationManager($entity), $relation, $this->request));
+        return $relation ? $this->item($relation, new BaseTransformer($attribute->getRelationManager($entity), $relation, $this->request)) : null;
     }
 }
