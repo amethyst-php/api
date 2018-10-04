@@ -55,7 +55,7 @@ trait TestableBaseTrait
      */
     public function testSuccessCommon()
     {
-        $this->commonTest($this->getResourceUrl(), $this->faker::make()->parameters());
+        $this->commonTest($this->getResourceUrl());
     }
 
     /**
@@ -77,23 +77,17 @@ trait TestableBaseTrait
     /**
      * Test common.
      *
-     * @param string       $url
-     * @param \Railken\Bag $parameters
-     * @param bool         $check
+     * @param string $url
      */
-    public function commonTest($url, $parameters, $check = null)
+    public function commonTest($url)
     {
-        if (!$check) {
-            $check = $parameters;
-        }
-
         $this->withHeaders([
             'Accept'             => 'application/json',
             'Content-Type'       => 'application/json',
         ]);
 
         if ($this->checkRoute('create')) {
-            $response = $this->callAndTest('POST', $url, $parameters->toArray(), Response::HTTP_CREATED);
+            $response = $this->callAndTest('POST', $url, $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
         }
 
         if ($this->checkRoute('index')) {
@@ -108,7 +102,7 @@ trait TestableBaseTrait
 
         if ($this->checkRoute('update')) {
             $resource = $this->retrieveResource($url);
-            $response = $this->callAndTest('PUT', $url.'/'.$resource->id, $parameters->toArray(), Response::HTTP_OK);
+            $response = $this->callAndTest('PUT', $url.'/'.$resource->id, $this->faker::make()->parameters()->toArray(), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('remove')) {
