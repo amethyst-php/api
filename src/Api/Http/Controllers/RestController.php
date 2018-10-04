@@ -125,7 +125,7 @@ abstract class RestController extends Controller
      *
      * @return TransformerAbstract
      */
-    public function getFractalTransformer(EntityContract $entity, Request $request): TransformerAbstract
+    public function getFractalTransformer(EntityContract $entity = null, Request $request): TransformerAbstract
     {
         $classTransformer = $this->transformerClass;
 
@@ -191,7 +191,7 @@ abstract class RestController extends Controller
      */
     public function serializeCollection(Collection $collection, Request $request, $paginator)
     {
-        $transformer = $this->getFractalTransformer($collection->get(0, null), $request);
+        $transformer = $this->getFractalTransformer($collection->get(0), $request);
 
         $resource = new Fractal\Resource\Collection($collection, $transformer, $this->getResourceName());
         $resource->setPaginator(new IlluminatePaginatorAdapter($paginator));

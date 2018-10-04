@@ -49,7 +49,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      * @param \Railken\Lem\Contracts\EntityContract  $entity
      * @param \Illuminate\Http\Request               $request
      */
-    public function __construct(ManagerContract $manager, EntityContract $entity, Request $request)
+    public function __construct(ManagerContract $manager, EntityContract $entity = null, Request $request)
     {
         $this->manager = $manager;
         $this->inflector = new Inflector();
@@ -62,7 +62,10 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         }
 
         $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
-        $this->setAuthorizedAttributes($this->manager->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
+
+        if ($entity) {
+            $this->setAuthorizedAttributes($this->manager->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
+        }
     }
 
     /**
