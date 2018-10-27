@@ -5,39 +5,22 @@ namespace Railken\Amethyst\Api\Support\Testing;
 use Illuminate\Support\Facades\Config;
 use Railken\Lem\Attributes\BelongsToAttribute;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Route;
 
 trait TestableBaseTrait
 {
     /**
-     * Retrieve routes enabled.
-     *
-     * @return array
-     */
-    public function getRoutes()
-    {
-        return property_exists($this, 'routes') ? $this->routes : ['index', 'show', 'create', 'update', 'remove'];
-    }
-
-    /**
      * Check route.
      *
-     * @param string $route
+     * @param string $name
      *
      * @return bool
      */
     public function checkRoute(string $name): bool
     {
-        return in_array($name, $this->getRoutes());
-    }
-
-    /**
-     * Retrieve basic url.
-     *
-     * @return string
-     */
-    public function getBaseUrl(): string
-    {
-        return Config::get('amethyst.api.http.'.$this->group.'.router.prefix');
+        $reflection = new \ReflectionClass($this->getController());
+        
+        return $reflection->hasMethod($name);
     }
 
     /**
@@ -45,9 +28,9 @@ trait TestableBaseTrait
      *
      * @return string
      */
-    public function getResourceUrl(): string
+    public function getRoute(): string
     {
-        return $this->getBaseUrl().Config::get($this->config.'.router.prefix');
+        return $this->route;
     }
 
     /**
@@ -55,21 +38,21 @@ trait TestableBaseTrait
      */
     public function testSuccessCommon()
     {
-        $this->commonTest($this->getResourceUrl());
+        $this->commonTest($this->getRoute());
     }
 
     /**
      * Retrieve a resource.
      *
-     * @param string $url
+     * @param string $routeName
      */
-    public function retrieveResource(string $url)
+    public function retrieveResource(string $routeName)
     {
         if (!$this->checkRoute('index')) {
             throw new \Exception('Index route should be enabled to retrieve a resource for update, remove and show');
         }
 
-        $response = $this->callAndTest('GET', $url, [], Response::HTTP_OK);
+        $response = $this->callAndTest('GET', route($routeName.".index"), [], Response::HTTP_OK);
 
         return json_decode($response->getContent())->data[0];
     }
@@ -77,9 +60,9 @@ trait TestableBaseTrait
     /**
      * Test common.
      *
-     * @param string $url
+     * @param string $routeName
      */
-    public function commonTest($url)
+    public function commonTest(string $routeName)
     {
         $this->withHeaders([
             'Accept'             => 'application/json',
@@ -87,28 +70,43 @@ trait TestableBaseTrait
         ]);
 
         if ($this->checkRoute('create')) {
-            $response = $this->callAndTest('POST', $url, $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $response = $this->callAndTest('POST', route($routeName.".create"), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
         }
 
         if ($this->checkRoute('index')) {
-            $response = $this->callAndTest('GET', $url, array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
-            $response = $this->callAndTest('GET', $url, array_merge($this->getDefaultGetParameters(), ['query' => 'id eq 1']), Response::HTTP_OK);
+            $response = $this->callAndTest('GET', route($routeName.".index"), array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
+            $response = $this->callAndTest('GET', route($routeName.".index"), array_merge($this->getDefaultGetParameters(), ['query' => 'id eq 1']), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('show')) {
-            $resource = $this->retrieveResource($url);
-            $response = $this->callAndTest('GET', $url.'/'.$resource->id, array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
+            $resource = $this->retrieveResource($routeName);
+            $response = $this->callAndTest('GET', route($routeName.".show", ['id' => $resource->id]), array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('update')) {
-            $resource = $this->retrieveResource($url);
-            $response = $this->callAndTest('PUT', $url.'/'.$resource->id, $this->faker::make()->parameters()->toArray(), Response::HTTP_OK);
+            $resource = $this->retrieveResource($routeName);
+            $response = $this->callAndTest('PUT', route($routeName.".update", ['id' => $resource->id]), $this->faker::make()->parameters()->toArray(), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('remove')) {
-            $resource = $this->retrieveResource($url);
-            $response = $this->callAndTest('DELETE', $url.'/'.$resource->id, [], Response::HTTP_NO_CONTENT);
+            $resource = $this->retrieveResource($routeName);
+            $response = $this->callAndTest('DELETE', route($routeName.".remove", ['id' => $resource->id]), [], Response::HTTP_NO_CONTENT);
         }
+    }
+
+    public function getController()
+    {
+        $routeCollection = Route::getRoutes();
+        $routes = $routeCollection->getRoutes();
+        $name = $this->getRoute();
+
+        $grouped_routes = array_filter($routes, function($route) use ($name) {
+            $action = $route->getAction();
+
+            return isset($action['as']) && strpos($action['as'], $name) !== false;
+        });
+
+        return explode("@",$grouped_routes[0]->getAction()['controller'])[0];
     }
 
     /**
@@ -118,7 +116,8 @@ trait TestableBaseTrait
      */
     public function getDefaultGetParameters()
     {
-        $controller = $this->app->make(Config::get($this->config.'.controller'));
+        $controller = $this->app->make($this->getController());
+
         $attributes = $controller->getManager()->getAttributes()->filter(function ($attribute) {
             return $attribute instanceof BelongsToAttribute;
         })->map(function ($attribute) {
