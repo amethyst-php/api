@@ -100,11 +100,11 @@ trait TestableBaseTrait
         $routes = $routeCollection->getRoutes();
         $name = $this->getRoute();
 
-        $grouped_routes = array_filter($routes, function($route) use ($name) {
+        $grouped_routes = array_values(array_filter($routes, function($route) use ($name) {
             $action = $route->getAction();
 
             return isset($action['as']) && strpos($action['as'], $name) !== false;
-        });
+        }));
 
         return explode("@",$grouped_routes[0]->getAction()['controller'])[0];
     }
