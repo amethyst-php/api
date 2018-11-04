@@ -2,10 +2,9 @@
 
 namespace Railken\Amethyst\Api\Support\Testing;
 
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Route;
 use Railken\Lem\Attributes\BelongsToAttribute;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Route;
 
 trait TestableBaseTrait
 {
@@ -19,7 +18,7 @@ trait TestableBaseTrait
     public function checkRoute(string $name): bool
     {
         $reflection = new \ReflectionClass($this->getController());
-        
+
         return $reflection->hasMethod($name);
     }
 
@@ -52,7 +51,7 @@ trait TestableBaseTrait
             throw new \Exception('Index route should be enabled to retrieve a resource for update, remove and show');
         }
 
-        $response = $this->callAndTest('GET', route($routeName.".index"), [], Response::HTTP_OK);
+        $response = $this->callAndTest('GET', route($routeName.'.index'), [], Response::HTTP_OK);
 
         return json_decode($response->getContent())->data[0];
     }
@@ -70,27 +69,27 @@ trait TestableBaseTrait
         ]);
 
         if ($this->checkRoute('create')) {
-            $response = $this->callAndTest('POST', route($routeName.".create"), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
         }
 
         if ($this->checkRoute('index')) {
-            $response = $this->callAndTest('GET', route($routeName.".index"), array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
-            $response = $this->callAndTest('GET', route($routeName.".index"), array_merge($this->getDefaultGetParameters(), ['query' => 'id eq 1']), Response::HTTP_OK);
+            $response = $this->callAndTest('GET', route($routeName.'.index'), array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
+            $response = $this->callAndTest('GET', route($routeName.'.index'), array_merge($this->getDefaultGetParameters(), ['query' => 'id eq 1']), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('show')) {
             $resource = $this->retrieveResource($routeName);
-            $response = $this->callAndTest('GET', route($routeName.".show", ['id' => $resource->id]), array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
+            $response = $this->callAndTest('GET', route($routeName.'.show', ['id' => $resource->id]), array_merge($this->getDefaultGetParameters(), []), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('update')) {
             $resource = $this->retrieveResource($routeName);
-            $response = $this->callAndTest('PUT', route($routeName.".update", ['id' => $resource->id]), $this->faker::make()->parameters()->toArray(), Response::HTTP_OK);
+            $response = $this->callAndTest('PUT', route($routeName.'.update', ['id' => $resource->id]), $this->faker::make()->parameters()->toArray(), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('remove')) {
             $resource = $this->retrieveResource($routeName);
-            $response = $this->callAndTest('DELETE', route($routeName.".remove", ['id' => $resource->id]), [], Response::HTTP_NO_CONTENT);
+            $response = $this->callAndTest('DELETE', route($routeName.'.remove', ['id' => $resource->id]), [], Response::HTTP_NO_CONTENT);
         }
     }
 
@@ -100,13 +99,13 @@ trait TestableBaseTrait
         $routes = $routeCollection->getRoutes();
         $name = $this->getRoute();
 
-        $grouped_routes = array_values(array_filter($routes, function($route) use ($name) {
+        $grouped_routes = array_values(array_filter($routes, function ($route) use ($name) {
             $action = $route->getAction();
 
             return isset($action['as']) && strpos($action['as'], $name) !== false;
         }));
 
-        return explode("@",$grouped_routes[0]->getAction()['controller'])[0];
+        return explode('@', $grouped_routes[0]->getAction()['controller'])[0];
     }
 
     /**

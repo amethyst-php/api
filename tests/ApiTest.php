@@ -24,9 +24,9 @@ class ApiTest extends BaseTest
     protected $group = 'admin';
 
     /**
-     * Base path config.
+     * Route name.
      *
      * @var string
      */
-    protected $config = 'ore.faker.http.admin';
+    protected $route = 'admin.foo';
 }
