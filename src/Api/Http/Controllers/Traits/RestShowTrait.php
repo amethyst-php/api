@@ -17,7 +17,7 @@ trait RestShowTrait
      */
     public function show($id, Request $request)
     {
-        $entity = $this->getQuery()->where('id', $id)->first();
+        $entity = $this->getEntityById($id);
 
         if (!$entity) {
             return $this->response(null, Response::HTTP_NOT_FOUND);
