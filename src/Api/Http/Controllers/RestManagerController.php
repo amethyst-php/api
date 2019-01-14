@@ -2,9 +2,9 @@
 
 namespace Railken\Amethyst\Api\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Railken\Lem\Attributes;
 use Railken\Lem\Contracts\ManagerContract;
-use Illuminate\Support\Facades\DB;
 
 abstract class RestManagerController extends RestController
 {
@@ -25,7 +25,6 @@ abstract class RestManagerController extends RestController
         $this->inializeManager();
         $this->inializeQueryable();
         $this->initializeFillable();
-
 
         $this->manager->setAgent($this->getUser());
 
@@ -90,7 +89,7 @@ abstract class RestManagerController extends RestController
 
     public function getEntityById(int $id)
     {
-        return $this->getQuery()->where($this->manager->newEntity()->getTable().".id", $id)->first();
+        return $this->getQuery()->where($this->manager->newEntity()->getTable().'.id', $id)->first();
     }
 
     public function retrieveNestedAttributes($query, ManagerContract $manager, int $level = 2, array $prefixes = []): array
@@ -98,41 +97,35 @@ abstract class RestManagerController extends RestController
         $attributes = [];
 
         foreach ($manager->getAttributes() as $attribute) {
-            
             if ($attribute instanceof Attributes\BelongsToAttribute && $level > 0) {
-
                 $relationName = $attribute->getRelationName();
                 $relationatedManager = $attribute->getRelationManager($manager->newEntity());
 
                 $belongsToRelation = $manager->newEntity()->$relationName();
 
-                $ownerTable = implode(".", array_merge([$relationName], $prefixes));
+                $ownerTable = implode('.', array_merge([$relationName], $prefixes));
                 $foreignPrefixes = !empty($prefixes) ? $prefixes : [$manager->newEntity()->getTable()];
 
                 $query->leftJoin(
-                    DB::raw('`'.$relationatedManager->newEntity()->getTable()."` as `".$ownerTable.'`'), 
-                    DB::raw('`'.$ownerTable."`.`".$belongsToRelation->getOwnerKey().'`'),
-                    '=', 
-                    DB::raw('`'.implode(".", $foreignPrefixes).'`.`'.$belongsToRelation->getForeignKey().'`')
+                    DB::raw('`'.$relationatedManager->newEntity()->getTable().'` as `'.$ownerTable.'`'),
+                    DB::raw('`'.$ownerTable.'`.`'.$belongsToRelation->getOwnerKey().'`'),
+                    '=',
+                    DB::raw('`'.implode('.', $foreignPrefixes).'`.`'.$belongsToRelation->getForeignKey().'`')
                 );
 
                 $relationatedAttributes = $this->retrieveNestedAttributes(
-                    $query, 
-                    $relationatedManager, 
-                    $level - 1, 
+                    $query,
+                    $relationatedManager,
+                    $level - 1,
                     array_merge([$relationName], $prefixes)
                 );
 
                 $attributes = array_merge($attributes, $relationatedAttributes);
-
-
             } else {
-                $attributes[] = implode(".",array_merge($prefixes, [$attribute->getName()]));
+                $attributes[] = implode('.', array_merge($prefixes, [$attribute->getName()]));
             }
-
-        };
+        }
 
         return $attributes;
-
     }
 }
