@@ -121,9 +121,9 @@ abstract class RestManagerController extends RestController
                 );
 
                 $attributes = array_merge($attributes, $relationatedAttributes);
-            } else {
-                $attributes[] = implode('.', array_merge($prefixes, [$attribute->getName()]));
             }
+
+            $attributes[] = implode('.', array_merge($prefixes, [$attribute->getName()]));
         }
 
         return $attributes;
