@@ -42,10 +42,10 @@ class Sorter
      */
     public function add($name, $direction)
     {
-        if (!in_array($name, $this->keys)) {
+        if (!in_array($name, $this->keys, true)) {
             throw new Exceptions\InvalidSorterFieldException($name);
         }
-        if (!in_array($direction, ['asc', 'desc'])) {
+        if (!in_array($direction, ['asc', 'desc'], true)) {
             throw new Exceptions\InvalidSorterDirectionException($direction);
         }
 

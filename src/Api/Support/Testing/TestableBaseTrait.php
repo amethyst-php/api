@@ -96,8 +96,8 @@ trait TestableBaseTrait
     public function getController()
     {
         $routeCollection = Route::getRoutes();
-        $routes = $routeCollection->getRoutes();
-        $name = $this->getRoute();
+        $routes          = $routeCollection->getRoutes();
+        $name            = $this->getRoute();
 
         $grouped_routes = array_values(array_filter($routes, function ($route) use ($name) {
             $action = $route->getAction();
