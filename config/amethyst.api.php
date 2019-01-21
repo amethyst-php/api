@@ -9,13 +9,13 @@ return [
             ],
         ],
         'app' => [
-            'router'     => [
+            'router' => [
                 'as'     => 'app.',
                 'prefix' => '/api',
             ],
         ],
         'user' => [
-            'router'     => [
+            'router' => [
                 'as'     => 'user.',
                 'prefix' => '/api',
             ],

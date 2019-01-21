@@ -7,7 +7,7 @@ use Railken\Lem\Contracts\EntityContract;
 
 trait ApiTransformerTrait
 {
-    protected $selectedAttributes   = [];
+    protected $selectedAttributes = [];
     protected $authorizedAttributes = [];
 
     public function setSelectedAttributes(array $selectedAttributes = [])

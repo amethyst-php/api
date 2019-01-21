@@ -54,7 +54,7 @@ abstract class RestManagerController extends RestController
 
         $queryable = $this->retrieveNestedAttributes($query, $this->manager, $this->defaultNestedRelations);
 
-        $this->queryable     = !empty($this->queryable) ? $this->queryable : $queryable;
+        $this->queryable = !empty($this->queryable) ? $this->queryable : $queryable;
         $this->startingQuery = $query;
     }
 
@@ -98,14 +98,13 @@ abstract class RestManagerController extends RestController
 
         foreach ($manager->getAttributes() as $attribute) {
             if ($attribute instanceof Attributes\MorphToAttribute && $level > 0) {
-                
-            } else if ($attribute instanceof Attributes\BelongsToAttribute && $level > 0) {
-                $relationName        = $attribute->getRelationName();
+            } elseif ($attribute instanceof Attributes\BelongsToAttribute && $level > 0) {
+                $relationName = $attribute->getRelationName();
                 $relationatedManager = $attribute->getRelationManager($manager->newEntity());
 
                 $belongsToRelation = $manager->newEntity()->$relationName();
 
-                $ownerTable      = implode('.', array_merge([$relationName], $prefixes));
+                $ownerTable = implode('.', array_merge([$relationName], $prefixes));
                 $foreignPrefixes = !empty($prefixes) ? $prefixes : [$manager->newEntity()->getTable()];
 
                 $query->leftJoin(

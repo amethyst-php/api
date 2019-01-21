@@ -51,9 +51,9 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     public function __construct(ManagerContract $manager, EntityContract $entity = null, Request $request)
     {
-        $this->manager   = $manager;
+        $this->manager = $manager;
         $this->inflector = new Inflector();
-        $this->request   = $request;
+        $this->request = $request;
 
         foreach ($this->manager->getAttributes() as $attribute) {
             if ($attribute instanceof BelongsToAttribute) {
