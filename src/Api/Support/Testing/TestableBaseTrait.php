@@ -63,11 +63,6 @@ trait TestableBaseTrait
      */
     public function commonTest(string $routeName)
     {
-        $this->withHeaders([
-            'Accept'       => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
-
         if ($this->checkRoute('create')) {
             $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
         }
@@ -138,7 +133,9 @@ trait TestableBaseTrait
      */
     public function callAndTest($method, $url, $parameters, $code)
     {
-        $response = $this->call($method, $url, $parameters);
+        $server = $this->transformHeadersToServerVars($this->defaultHeaders);
+
+        $response = $this->call($method, $url, $parameters, [], [], $server);
 
         $this->printCall($method, $url, $parameters, $response, $code);
 
