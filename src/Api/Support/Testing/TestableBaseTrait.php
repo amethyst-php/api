@@ -86,6 +86,11 @@ trait TestableBaseTrait
             $resource = $this->retrieveResource($routeName);
             $response = $this->callAndTest('DELETE', route($routeName.'.remove', ['id' => $resource->id]), [], Response::HTTP_NO_CONTENT);
         }
+
+        if ($this->checkRoute('store')) {
+            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), []), Response::HTTP_OK);
+            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq 1']), Response::HTTP_OK);
+        }
     }
 
     public function getController()
