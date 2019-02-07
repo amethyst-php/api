@@ -93,8 +93,8 @@ trait TestableBaseTrait
         }
 
         if ($this->checkRoute('erase')) {
-            $response = $this->callAndTest('DELETE', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), []), Response::HTTP_OK);
-            $response = $this->callAndTest('DELETE', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq 1']), Response::HTTP_OK);
+            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->faker::make()->parameters()->toArray(), []), Response::HTTP_OK);
+            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq 1']), Response::HTTP_OK);
         }
     }
 
