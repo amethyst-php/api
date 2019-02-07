@@ -88,13 +88,15 @@ trait TestableBaseTrait
         }
 
         if ($this->checkRoute('store')) {
-            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), []), Response::HTTP_OK);
-            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq 1']), Response::HTTP_OK);
+            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $resource = json_decode($response->getContent())->data;
+            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('erase')) {
-            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->faker::make()->parameters()->toArray(), []), Response::HTTP_OK);
-            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq 1']), Response::HTTP_OK);
+            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $resource = json_decode($response->getContent())->data;
+            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
         }
     }
 
