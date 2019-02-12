@@ -57,6 +57,14 @@ trait TestableBaseTrait
     }
 
     /**
+     * @return array
+     */
+    public function getFakerParameters()
+    {
+        return $this->faker::make()->parameters()->toArray();
+    }
+
+    /**
      * Test common.
      *
      * @param string $routeName
@@ -64,7 +72,7 @@ trait TestableBaseTrait
     public function commonTest(string $routeName)
     {
         if ($this->checkRoute('create')) {
-            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->getFakerParameters(), Response::HTTP_CREATED);
         }
 
         if ($this->checkRoute('index')) {
@@ -79,7 +87,7 @@ trait TestableBaseTrait
 
         if ($this->checkRoute('update')) {
             $resource = $this->retrieveResource($routeName);
-            $response = $this->callAndTest('PUT', route($routeName.'.update', ['id' => $resource->id]), $this->faker::make()->parameters()->toArray(), Response::HTTP_OK);
+            $response = $this->callAndTest('PUT', route($routeName.'.update', ['id' => $resource->id]), $this->getFakerParameters(), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('remove')) {
@@ -88,15 +96,15 @@ trait TestableBaseTrait
         }
 
         if ($this->checkRoute('store')) {
-            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->getFakerParameters(), Response::HTTP_CREATED);
             $resource = json_decode($response->getContent())->data;
-            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
+            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->getFakerParameters(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('erase')) {
-            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->faker::make()->parameters()->toArray(), Response::HTTP_CREATED);
+            $response = $this->callAndTest('POST', route($routeName.'.create'), $this->getFakerParameters(), Response::HTTP_CREATED);
             $resource = json_decode($response->getContent())->data;
-            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->faker::make()->parameters()->toArray(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
+            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->getFakerParameters(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
         }
     }
 
