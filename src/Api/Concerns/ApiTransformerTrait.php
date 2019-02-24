@@ -4,6 +4,7 @@ namespace Railken\Amethyst\Api\Concerns;
 
 use Railken\Bag;
 use Railken\Lem\Contracts\EntityContract;
+use Illuminate\Support\Collection;
 
 trait ApiTransformerTrait
 {
@@ -34,23 +35,6 @@ trait ApiTransformerTrait
         return $this->authorizedAttributes;
     }
 
-    public function filterAttributes(array $attributes)
-    {
-        $attributes = new Bag($attributes);
-
-        return $attributes->only($this->getSelectedAttributes())->only($this->getAuthorizedAttributes())->toArray();
-    }
-
-    /**
-     * Turn this item object into a generic array.
-     *
-     * @return array
-     */
-    public function transformAttributes(EntityContract $entity)
-    {
-        return $entity->toArray();
-    }
-
     /**
      * Turn this item object into a generic array.
      *
@@ -58,6 +42,7 @@ trait ApiTransformerTrait
      */
     public function transform(EntityContract $entity)
     {
-        return $this->filterAttributes($this->transformAttributes($entity));
+        // return $this->filterAttributes($this->transformAttributes($entity));
+        return $this->manager->getSerializer()->serialize($entity, Collection::make(array_merge($this->getSelectedAttributes(), $this->getAuthorizedAttributes())))->toArray();
     }
 }
