@@ -15,7 +15,7 @@ abstract class RestManagerController extends RestController
 
     protected $startingQuery;
 
-    protected $defaultNestedRelations = 1;
+    protected $defaultNestedRelations = 2;
 
     /**
      * Create a new instance.
