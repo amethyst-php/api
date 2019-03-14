@@ -11,6 +11,8 @@ use Railken\Lem\Attributes\BelongsToAttribute;
 use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;
+use Railken\EloquentMapper\Mapper;
+use Illuminate\Support\Facades\Config;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {
@@ -55,11 +57,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         $this->inflector = new Inflector();
         $this->request = $request;
 
-        foreach ($this->manager->getAttributes() as $attribute) {
-            if ($attribute instanceof BelongsToAttribute) {
-                $this->availableIncludes[] = $attribute->getRelationName();
-            }
-        }
+        $this->availableIncludes = Mapper::mapKeysRelation(get_class($entity));
 
         $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
 
@@ -114,19 +112,37 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     public function resolveInclude(string $relationName, array $args)
     {
+
+        $this->manager->getEntity();
+
         $entity = $args[0];
 
-        $attribute = $this->manager->getAttributes()->filter(function ($attribute) use ($relationName) {
-            return $attribute instanceof BelongsToAttribute && $attribute->getRelationName() === $relationName;
-        })->first();
+        $relations = Mapper::mapRelations(get_class($this->manager->newEntity()), function ($prefix, $relation) {
+            return [$relation->name, [$relation]];
+        }, 1);
 
         $relation = $entity->{$relationName};
 
+        $nameRelation = str_replace('_', '-', $this->inflector->tableize(get_class($relation)));
 
-        return $relation ? $this->item(
+        $manager = null;
+
+        foreach (array_keys(Config::get('amethyst')) as $config) {
+
+            foreach (Config::get('amethyst.'.$config.'.data', []) as $data) {
+                if (isset($data['model']) && $relation instanceof $data['model']) {
+                    $classManager = $data['manager'];
+                    $manager = new $classManager($this->manager->getAgent());
+                    break;
+                }
+            }
+
+        }
+
+        return $relation && $manager ? $this->item(
             $relation, 
-            new BaseTransformer($attribute->getRelationManager($entity), $relation, $this->request),
-            str_replace('_', '-', $this->inflector->tableize($attribute->getRelationManager($entity)->getName()))
+            new BaseTransformer($manager, $relation, $this->request),
+            str_replace('_', '-', $this->inflector->tableize($manager->getName()))
         ) : null;
     }
 }

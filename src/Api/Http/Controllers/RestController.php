@@ -142,7 +142,7 @@ abstract class RestController extends Controller
      */
     public function getResourceBaseUrl(Request $request): string
     {
-        return $request->getSchemeAndHttpHost().Config::get('ore.api.http.'.explode('.', Route::getCurrentRoute()->getName())[0].'.router.prefix');
+        return $request->getSchemeAndHttpHost().Config::get('amethyst.api.http.'.explode('.', Route::getCurrentRoute()->getName())[0].'.router.prefix');
     }
 
     /**
