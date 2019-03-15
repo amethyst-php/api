@@ -13,6 +13,7 @@ use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;
 use Railken\EloquentMapper\Mapper;
 use Illuminate\Support\Facades\Config;
+use Railken\Amethyst\Api\Support\Helper;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {
@@ -123,21 +124,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $relation = $entity->{$relationName};
 
-        $nameRelation = str_replace('_', '-', $this->inflector->tableize(get_class($relation)));
-
-        $manager = null;
-
-        foreach (array_keys(Config::get('amethyst')) as $config) {
-
-            foreach (Config::get('amethyst.'.$config.'.data', []) as $data) {
-                if (isset($data['model']) && $relation instanceof $data['model']) {
-                    $classManager = $data['manager'];
-                    $manager = new $classManager($this->manager->getAgent());
-                    break;
-                }
-            }
-
-        }
+        $manager = $relation ? Helper::newManagerByModel(get_class($relation), $this->manager->getAgent()) : null;
 
         return $relation && $manager ? $this->item(
             $relation, 

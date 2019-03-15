@@ -7,6 +7,7 @@ use Railken\Lem\Attributes;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\EloquentMapper\Mapper;
 use Railken\EloquentMapper\Joiner;
+use Railken\Amethyst\Api\Support\Helper;
 
 abstract class RestManagerController extends RestController
 {
@@ -101,10 +102,13 @@ abstract class RestManagerController extends RestController
             $key = $prefix ? $prefix.'.'.$relation->name : $relation->name;
 
             $joiner->joinRelations($key);
-            
-            return [$key, $this->getManager()->getAttributes()->map(function ($attribute) use ($key) {
+
+
+            $manager = Helper::newManagerByModel($relation->model, $this->getManager()->getAgent());
+
+            return [$key, $manager->getAttributes()->map(function ($attribute) use ($key) {
                 return $key.".".$attribute->getName();
-            })->toArray()];
+            })->values()->toArray()];
         });
 
         return $attributes;
