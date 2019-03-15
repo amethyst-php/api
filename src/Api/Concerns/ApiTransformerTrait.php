@@ -2,9 +2,8 @@
 
 namespace Railken\Amethyst\Api\Concerns;
 
-use Railken\Bag;
-use Railken\Lem\Contracts\EntityContract;
 use Illuminate\Support\Collection;
+use Railken\Lem\Contracts\EntityContract;
 
 trait ApiTransformerTrait
 {

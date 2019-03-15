@@ -2,8 +2,10 @@
 
 namespace Railken\Amethyst\Tests;
 
+use App as App;
 use App\Controllers\FooController;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Railken\Amethyst\Api\Support\Router;
@@ -54,6 +56,32 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
         Route::fallback(function () {
             return response()->json(['message' => 'Not Found!'], 404);
         });
+
+        Config::set('amethyst.foo.data.foo', [
+            'table'      => 'amethyst_foos',
+            'comment'    => 'Foo',
+            'model'      => App\Models\Foo::class,
+            'schema'     => App\Schemas\FooSchema::class,
+            'repository' => App\Repositories\FooRepository::class,
+            'serializer' => App\Serializers\FooSerializer::class,
+            'validator'  => App\Validators\FooValidator::class,
+            'authorizer' => App\Authorizers\FooAuthorizer::class,
+            'faker'      => App\Fakers\FooFaker::class,
+            'manager'    => App\Managers\FooManager::class,
+        ]);
+
+        Config::set('amethyst.bar.data.bar', [
+            'table'      => 'amethyst_Bars',
+            'comment'    => 'Bar',
+            'model'      => App\Models\Bar::class,
+            'schema'     => App\Schemas\BarSchema::class,
+            'repository' => App\Repositories\BarRepository::class,
+            'serializer' => App\Serializers\BarSerializer::class,
+            'validator'  => App\Validators\BarValidator::class,
+            'authorizer' => App\Authorizers\BarAuthorizer::class,
+            'faker'      => App\Fakers\BarFaker::class,
+            'manager'    => App\Managers\BarManager::class,
+        ]);
     }
 
     protected function getPackageProviders($app)

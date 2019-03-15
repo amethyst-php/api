@@ -7,13 +7,11 @@ use Illuminate\Http\Request;
 use League\Fractal\TransformerAbstract;
 use Railken\Amethyst\Api\Concerns\ApiTransformerTrait;
 use Railken\Amethyst\Api\Contracts\TransformerContract;
-use Railken\Lem\Attributes\BelongsToAttribute;
+use Railken\Amethyst\Api\Support\Helper;
+use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;
-use Railken\EloquentMapper\Mapper;
-use Illuminate\Support\Facades\Config;
-use Railken\Amethyst\Api\Support\Helper;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {
@@ -113,7 +111,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     public function resolveInclude(string $relationName, array $args)
     {
-
         $this->manager->getEntity();
 
         $entity = $args[0];
@@ -127,7 +124,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         $manager = $relation ? Helper::newManagerByModel(get_class($relation), $this->manager->getAgent()) : null;
 
         return $relation && $manager ? $this->item(
-            $relation, 
+            $relation,
             new BaseTransformer($manager, $relation, $this->request),
             str_replace('_', '-', $this->inflector->tableize($manager->getName()))
         ) : null;

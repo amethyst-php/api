@@ -2,12 +2,10 @@
 
 namespace Railken\Amethyst\Api\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Railken\Lem\Attributes;
-use Railken\Lem\Contracts\ManagerContract;
-use Railken\EloquentMapper\Mapper;
-use Railken\EloquentMapper\Joiner;
 use Railken\Amethyst\Api\Support\Helper;
+use Railken\EloquentMapper\Joiner;
+use Railken\EloquentMapper\Mapper;
+use Railken\Lem\Attributes;
 
 abstract class RestManagerController extends RestController
 {
@@ -97,19 +95,21 @@ abstract class RestManagerController extends RestController
     {
         $joiner = new Joiner($query);
 
-        $attributes = Mapper::mapRelations(get_class($this->getManager()->newEntity()), function ($prefix, $relation) use ($joiner, $query) {
+        $attributes = $this->getManager()->getAttributes()->map(function ($attribute) {
+            return $attribute->getName();
+        })->values()->toArray();
 
+        $attributes = array_merge($attributes, Mapper::mapRelations(get_class($this->getManager()->newEntity()), function ($prefix, $relation) use ($joiner, $query) {
             $key = $prefix ? $prefix.'.'.$relation->name : $relation->name;
 
             $joiner->joinRelations($key);
 
-
             $manager = Helper::newManagerByModel($relation->model, $this->getManager()->getAgent());
 
             return [$key, $manager->getAttributes()->map(function ($attribute) use ($key) {
-                return $key.".".$attribute->getName();
+                return $key.'.'.$attribute->getName();
             })->values()->toArray()];
-        });
+        }));
 
         return $attributes;
     }

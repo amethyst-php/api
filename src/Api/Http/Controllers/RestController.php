@@ -2,6 +2,7 @@
 
 namespace Railken\Amethyst\Api\Http\Controllers;
 
+use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -14,7 +15,6 @@ use League\Fractal\TransformerAbstract;
 use Railken\Amethyst\Api\Transformers\BaseTransformer;
 use Railken\Bag;
 use Railken\Lem\Contracts\EntityContract;
-use Doctrine\Common\Inflector\Inflector;
 
 abstract class RestController extends Controller
 {
@@ -77,7 +77,7 @@ abstract class RestController extends Controller
      */
     public function getResourceName()
     {
-        return $this->name !== null ? $this->name : str_replace('_', '-', (new Inflector)->tableize($this->getManager()->getName()));
+        return $this->name !== null ? $this->name : str_replace('_', '-', (new Inflector())->tableize($this->getManager()->getName()));
     }
 
     /**
