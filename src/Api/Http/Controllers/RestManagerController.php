@@ -101,6 +101,8 @@ abstract class RestManagerController extends RestController
             })
             ->map(function ($item) use ($query) {
                 $query->with($item);
+
+                return $item;
             })
             ->toArray();
 
