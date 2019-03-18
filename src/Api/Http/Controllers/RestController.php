@@ -130,7 +130,7 @@ abstract class RestController extends Controller
     {
         $classTransformer = $this->transformerClass;
 
-        return new $classTransformer($this->getManager(), $entity, $request);
+        return new $classTransformer($this->getManager(), $request);
     }
 
     /**

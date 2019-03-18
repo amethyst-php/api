@@ -12,6 +12,7 @@ use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;
+use Illuminate\Support\Collection;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {
@@ -47,22 +48,21 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      * Create a new instance.
      *
      * @param \Railken\Lem\Contracts\ManagerContract $manager
-     * @param \Railken\Lem\Contracts\EntityContract  $entity
      * @param \Illuminate\Http\Request               $request
      */
-    public function __construct(ManagerContract $manager, EntityContract $entity = null, Request $request)
+    public function __construct(ManagerContract $manager, Request $request)
     {
         $this->manager = $manager;
         $this->inflector = new Inflector();
         $this->request = $request;
 
-        $this->availableIncludes = Mapper::mapKeysRelation(get_class($entity));
+        $this->availableIncludes = Mapper::mapKeysRelation(get_class($manager->newEntity()));
 
         $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
 
-        if ($entity) {
-            $this->setAuthorizedAttributes($this->manager->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
-        }
+        // if ($entity) {
+            // $this->setAuthorizedAttributes($this->manager->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
+        // }
     }
 
     /**
@@ -113,6 +113,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
     {
         $this->manager->getEntity();
 
+
         $entity = $args[0];
 
         $relations = Mapper::mapRelations(get_class($this->manager->newEntity()), function ($prefix, $relation) {
@@ -121,12 +122,28 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $relation = $entity->{$relationName};
 
-        $manager = $relation ? Helper::newManagerByModel(get_class($relation), $this->manager->getAgent()) : null;
+        if (!$relation) {
+            return null;
+        }
 
-        return $relation && $manager ? $this->item(
+        if ($relation instanceof Collection) {
+            $classRelation = get_class($relation[0]);
+            $method = "collection";
+        } else {
+            $classRelation = get_class($relation);
+            $method = "item";
+        }
+
+        $manager = Helper::newManagerByModel($classRelation, $this->manager->getAgent());
+
+        if (!$manager) {
+            return null;
+        }
+
+        return $this->$method(
             $relation,
-            new BaseTransformer($manager, $relation, $this->request),
+            new BaseTransformer($manager, $this->request),
             str_replace('_', '-', $this->inflector->tableize($manager->getName()))
-        ) : null;
+        );
     }
 }

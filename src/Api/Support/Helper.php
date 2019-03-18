@@ -20,12 +20,12 @@ class Helper
         return null;
     }
 
-    public static function newManagerByModel(string $class, AgentContract $agent = null)
+    public static function newManagerByModel(string $classModel, AgentContract $agent = null)
     {
-        $class = static::getManagerByModel($class);
+        $class = static::getManagerByModel($classModel);
 
         if (!$class) {
-            throw new \Exception(sprintf('Missing %s', $class));
+            throw new \Exception(sprintf('Missing %s', $classModel));
         }
 
         return new $class($agent);

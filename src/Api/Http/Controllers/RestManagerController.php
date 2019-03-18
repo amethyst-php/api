@@ -4,8 +4,10 @@ namespace Railken\Amethyst\Api\Http\Controllers;
 
 use Railken\Amethyst\Api\Support\Helper;
 use Railken\EloquentMapper\Joiner;
+use Illuminate\Http\Request;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
+use Illuminate\Support\Collection;
 
 abstract class RestManagerController extends RestController
 {
@@ -21,22 +23,21 @@ abstract class RestManagerController extends RestController
      */
     public function __construct()
     {
-        $this->inializeManager();
-        $this->inializeQueryable();
-        $this->initializeFillable();
-
-        $this->manager->setAgent($this->getUser());
-
         parent::__construct();
 
         $this->middleware(function ($request, $next) {
+
+            $this->inializeManager($request);
+            $this->inializeQueryable($request);
+            $this->initializeFillable($request);
+
             $this->manager->setAgent($this->getUser());
 
             return $next($request);
         });
     }
 
-    public function inializeManager()
+    public function inializeManager(Request $request)
     {
         $class = $this->class;
 
@@ -47,17 +48,17 @@ abstract class RestManagerController extends RestController
         $this->manager = new $class();
     }
 
-    public function inializeQueryable()
+    public function inializeQueryable(Request $request)
     {
         $query = $this->getManager()->getRepository()->getQuery();
 
-        $queryable = $this->retrieveNestedAttributes($query);
+        $queryable = $this->retrieveNestedAttributes($query, $request);
 
         $this->queryable = !empty($this->queryable) ? $this->queryable : $queryable;
         $this->startingQuery = $query;
     }
 
-    public function initializeFillable()
+    public function initializeFillable(Request $request)
     {
         $fillable = [];
 
@@ -91,16 +92,31 @@ abstract class RestManagerController extends RestController
         return $this->getQuery()->where($this->manager->newEntity()->getTable().'.id', $id)->first();
     }
 
-    public function retrieveNestedAttributes($query): array
+    public function retrieveNestedAttributes($query, Request $request): array
     {
-        $joiner = new Joiner($query);
 
         $attributes = $this->getManager()->getAttributes()->map(function ($attribute) {
             return $attribute->getName();
         })->values()->toArray();
 
-        $attributes = array_merge($attributes, Mapper::mapRelations(get_class($this->getManager()->newEntity()), function ($prefix, $relation) use ($joiner, $query) {
+
+        $relations = Collection::make(Mapper::mapKeysRelation(get_class($this->getManager()->newEntity())))
+            ->filter(function ($item) use ($request) {
+                return in_array($item, explode(",", $request->input('include')));
+            })
+            ->map(function ($item) use ($query) {
+                $query->with($item);
+            })
+            ->toArray();
+
+        $joiner = new Joiner($query);
+
+        $attributes = array_merge($attributes, Mapper::mapRelations(get_class($this->getManager()->newEntity()), function ($prefix, $relation) use ($joiner, $relations) {
             $key = $prefix ? $prefix.'.'.$relation->name : $relation->name;
+
+            if (!in_array($key, $relations)) {
+                return;
+            }
 
             $joiner->joinRelations($key);
 

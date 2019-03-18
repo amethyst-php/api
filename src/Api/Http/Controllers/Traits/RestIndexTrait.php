@@ -56,7 +56,7 @@ trait RestIndexTrait
         } catch (QuerySyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }
-
+        
         $result = $query->paginate($request->input('show', 10), ['*'], 'page', $request->input('page'));
 
         $resources = $result->getCollection();
