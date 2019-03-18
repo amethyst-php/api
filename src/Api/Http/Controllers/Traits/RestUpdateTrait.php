@@ -23,7 +23,7 @@ trait RestUpdateTrait
             return $this->response(null, Response::HTTP_NOT_FOUND);
         }
 
-        $params = $request->only($this->keys->fillable);
+        $params = $request->only($this->fillable);
 
         $result = $this->manager->update($entity, $params);
 

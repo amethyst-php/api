@@ -2,12 +2,12 @@
 
 namespace Railken\Amethyst\Api\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Railken\Amethyst\Api\Support\Helper;
 use Railken\EloquentMapper\Joiner;
-use Illuminate\Http\Request;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
-use Illuminate\Support\Collection;
 
 abstract class RestManagerController extends RestController
 {
@@ -23,10 +23,7 @@ abstract class RestManagerController extends RestController
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->middleware(function ($request, $next) {
-
             $this->inializeManager($request);
             $this->inializeQueryable($request);
             $this->initializeFillable($request);
@@ -94,15 +91,13 @@ abstract class RestManagerController extends RestController
 
     public function retrieveNestedAttributes($query, Request $request): array
     {
-
         $attributes = $this->getManager()->getAttributes()->map(function ($attribute) {
             return $attribute->getName();
         })->values()->toArray();
 
-
         $relations = Collection::make(Mapper::mapKeysRelation(get_class($this->getManager()->newEntity())))
             ->filter(function ($item) use ($request) {
-                return in_array($item, explode(",", $request->input('include')));
+                return in_array($item, explode(',', $request->input('include')), true);
             })
             ->map(function ($item) use ($query) {
                 $query->with($item);
@@ -114,7 +109,7 @@ abstract class RestManagerController extends RestController
         $attributes = array_merge($attributes, Mapper::mapRelations(get_class($this->getManager()->newEntity()), function ($prefix, $relation) use ($joiner, $relations) {
             $key = $prefix ? $prefix.'.'.$relation->name : $relation->name;
 
-            if (!in_array($key, $relations)) {
+            if (!in_array($key, $relations, true)) {
                 return;
             }
 

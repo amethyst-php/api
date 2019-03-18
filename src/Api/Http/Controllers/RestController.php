@@ -13,7 +13,6 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 use Railken\Amethyst\Api\Transformers\BaseTransformer;
-use Railken\Bag;
 use Railken\Lem\Contracts\EntityContract;
 
 abstract class RestController extends Controller
@@ -29,11 +28,6 @@ abstract class RestController extends Controller
     public $transformerClass = BaseTransformer::class;
 
     /**
-     * @var Bag
-     */
-    public $keys;
-
-    /**
      * @var \Railken\Lem\Contracts\ManagerContract
      */
     public $manager;
@@ -46,29 +40,7 @@ abstract class RestController extends Controller
     /**
      * @var array
      */
-    public $selectable = [];
-
-    /**
-     * @var array
-     */
-    public $sortable = [];
-
-    /**
-     * @var array
-     */
     public $fillable = [];
-
-    /**
-     * Construct.
-     */
-    public function __construct()
-    {
-        $this->keys = new Bag();
-        $this->keys->set('queryable', $this->queryable);
-        $this->keys->set('selectable', collect(empty($this->selectable) ? $this->queryable : $this->selectable));
-        $this->keys->set('sortable', collect(empty($this->sortable) ? $this->queryable : $this->sortable));
-        $this->keys->set('fillable', $this->fillable);
-    }
 
     /**
      * Retrieve resource name.

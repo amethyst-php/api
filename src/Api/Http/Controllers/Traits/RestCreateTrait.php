@@ -18,7 +18,7 @@ trait RestCreateTrait
     {
         $manager = $this->manager;
 
-        $result = $manager->create($request->only($this->keys->fillable));
+        $result = $manager->create($request->only($this->fillable));
 
         if (!$result->ok()) {
             return $this->response(['errors' => $result->getSimpleErrors()], Response::HTTP_BAD_REQUEST);

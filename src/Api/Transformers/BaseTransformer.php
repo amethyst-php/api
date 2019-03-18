@@ -4,15 +4,14 @@ namespace Railken\Amethyst\Api\Transformers;
 
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
 use Railken\Amethyst\Api\Concerns\ApiTransformerTrait;
 use Railken\Amethyst\Api\Contracts\TransformerContract;
 use Railken\Amethyst\Api\Support\Helper;
 use Railken\EloquentMapper\Mapper;
-use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;
-use Illuminate\Support\Collection;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {
@@ -113,7 +112,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
     {
         $this->manager->getEntity();
 
-
         $entity = $args[0];
 
         $relations = Mapper::mapRelations(get_class($this->manager->newEntity()), function ($prefix, $relation) {
@@ -128,10 +126,10 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         if ($relation instanceof Collection) {
             $classRelation = get_class($relation[0]);
-            $method = "collection";
+            $method = 'collection';
         } else {
             $classRelation = get_class($relation);
-            $method = "item";
+            $method = 'item';
         }
 
         $manager = Helper::newManagerByModel($classRelation, $this->manager->getAgent());

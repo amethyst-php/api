@@ -31,7 +31,7 @@ trait RestEraseTrait
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }
 
-        $params = $request->only($this->keys->fillable);
+        $params = $request->only($this->fillable);
 
         DB::beginTransaction();
 
