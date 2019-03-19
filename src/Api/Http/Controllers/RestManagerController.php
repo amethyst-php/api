@@ -23,8 +23,9 @@ abstract class RestManagerController extends RestController
      */
     public function __construct()
     {
+        $this->inializeManager();
+
         $this->middleware(function ($request, $next) {
-            $this->inializeManager($request);
             $this->inializeQueryable($request);
             $this->initializeFillable($request);
 
@@ -34,7 +35,7 @@ abstract class RestManagerController extends RestController
         });
     }
 
-    public function inializeManager(Request $request)
+    public function inializeManager()
     {
         $class = $this->class;
 
