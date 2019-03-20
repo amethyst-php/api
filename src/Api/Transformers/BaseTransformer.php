@@ -120,7 +120,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $relation = $entity->{$relationName};
 
-        if (!$relation) {
+        if (!$relation || count($relation) === 0) {
             return null;
         }
 
