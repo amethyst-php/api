@@ -116,11 +116,16 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $relation = $entity->{$relationName};
 
-        if (!$relation || count($relation) === 0) {
+        if (!$relation) {
             return null;
         }
 
         if ($relation instanceof Collection) {
+
+            if ($relation->count() === 0) {
+                return null;
+            }
+            
             $classRelation = get_class($relation[0]);
             $method = 'collection';
         } else {
