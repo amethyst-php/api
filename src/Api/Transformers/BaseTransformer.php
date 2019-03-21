@@ -114,10 +114,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $entity = $args[0];
 
-        $relations = Mapper::mapRelations(get_class($this->manager->newEntity()), function ($prefix, $relation) {
-            return [$relation->name, [$relation]];
-        }, 1);
-
         $relation = $entity->{$relationName};
 
         if (!$relation || count($relation) === 0) {

@@ -96,9 +96,9 @@ abstract class RestManagerController extends RestController
             return $attribute->getName();
         })->values()->toArray();
 
-        $relations = Collection::make(Mapper::mapKeysRelation(get_class($this->getManager()->newEntity())))
-            ->filter(function ($item) use ($request) {
-                return in_array($item, explode(',', $request->input('include')), true);
+        $relations = Collection::make(explode(',', $request->input('include')))
+            ->filter(function ($item) {
+                return Mapper::isValidNestedRelation($this->getManager()->getEntity(), $item);
             })
             ->map(function ($item) use ($query) {
                 $query->with($item);
