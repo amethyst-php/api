@@ -94,37 +94,31 @@ abstract class RestManagerController extends RestController
     {
         $attributes = $this->getManager()->getAttributes()->map(function ($attribute) {
             return $attribute->getName();
-        })->values()->toArray();
+        })->values();
+
+        $joiner = new Joiner($query);
 
         $relations = Collection::make(explode(',', $request->input('include')))
             ->filter(function ($item) {
                 return Mapper::isValidNestedRelation($this->getManager()->getEntity(), $item);
             })
-            ->map(function ($item) use ($query) {
+            ->map(function ($item) use ($query, $joiner) {
                 $query->with($item);
+                $joiner->joinRelations($item);
 
                 return $item;
             })
             ->toArray();
 
-        $joiner = new Joiner($query);
+        Mapper::resolveRelations($this->getManager()->getEntity(), $relations)
+            ->map(function ($relation, $key) use (&$attributes) {
+                $manager = Helper::newManagerByModel($relation->model, $this->getManager()->getAgent());
 
-        $attributes = array_merge($attributes, Mapper::mapRelations(get_class($this->getManager()->newEntity()), function ($prefix, $relation) use ($joiner, $relations) {
-            $key = $prefix ? $prefix.'.'.$relation->name : $relation->name;
+                $attributes = $attributes->merge($manager->getAttributes()->map(function ($attribute) use ($key) {
+                    return $key.'.'.$attribute->getName();
+                })->values());
+            });
 
-            if (!in_array($key, $relations, true)) {
-                return;
-            }
-
-            $joiner->joinRelations($key);
-
-            $manager = Helper::newManagerByModel($relation->model, $this->getManager()->getAgent());
-
-            return [$key, $manager->getAttributes()->map(function ($attribute) use ($key) {
-                return $key.'.'.$attribute->getName();
-            })->values()->toArray()];
-        }));
-
-        return $attributes;
+        return $attributes->toArray();
     }
 }
