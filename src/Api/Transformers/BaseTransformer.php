@@ -121,11 +121,10 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         }
 
         if ($relation instanceof Collection) {
-
             if ($relation->count() === 0) {
                 return null;
             }
-            
+
             $classRelation = get_class($relation[0]);
             $method = 'collection';
         } else {
