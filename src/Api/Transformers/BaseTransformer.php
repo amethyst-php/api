@@ -110,8 +110,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     public function resolveInclude(string $relationName, array $args)
     {
-        $this->manager->getEntity();
-
         $entity = $args[0];
 
         $relation = $entity->{$relationName};
