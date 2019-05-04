@@ -8,6 +8,7 @@ use Railken\Amethyst\Api\Support\Helper;
 use Railken\EloquentMapper\Joiner;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
+use Illuminate\Support\Facades\Cache;
 
 abstract class RestManagerController extends RestController
 {
@@ -92,9 +93,11 @@ abstract class RestManagerController extends RestController
 
     public function retrieveNestedAttributes($query, Request $request): array
     {
-        $attributes = $this->getManager()->getAttributes()->map(function ($attribute) {
-            return $attribute->getName();
-        })->values();
+        $attributes = Cache::rememberForever($this->getManager()->getName()."::attributes", function () {
+            return $this->getManager()->getAttributes()->map(function ($attribute) {
+                return $attribute->getName();
+            })->values();
+        });
 
         $joiner = new Joiner($query);
 
@@ -102,21 +105,22 @@ abstract class RestManagerController extends RestController
             ->filter(function ($item) {
                 return Mapper::isValidNestedRelation($this->getManager()->getEntity(), $item);
             })
-            ->map(function ($item) use ($query, $joiner) {
-                $query->with($item);
-                $joiner->joinRelations($item);
-
-                return $item;
-            })
             ->toArray();
+
+        foreach ($relations as $relation) {
+            $query->with($relation);
+            $joiner->joinRelations($relation);
+        }
 
         Mapper::resolveRelations($this->getManager()->getEntity(), $relations)
             ->map(function ($relation, $key) use (&$attributes) {
-                $manager = Helper::newManagerByModel($relation->model, $this->getManager()->getAgent());
+                $manager = app('amethyst')->newManagerByModel($relation->model, $this->getManager()->getAgent());
 
-                $attributes = $attributes->merge($manager->getAttributes()->map(function ($attribute) use ($key) {
-                    return $key.'.'.$attribute->getName();
-                })->values());
+                $attributes = $attributes->merge(Cache::rememberForever(sprintf($manager->getName()."::attributeskey"), function () use ($manager, $key) {
+                    $manager->getAttributes()->map(function ($attribute) use ($key) {
+                        return $key.'.'.$attribute->getName();
+                    })->values();
+                }));
             });
 
         return $attributes->toArray();
