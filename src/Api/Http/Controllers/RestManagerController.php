@@ -9,9 +9,16 @@ use Railken\EloquentMapper\Joiner;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;
 use Illuminate\Support\Facades\Cache;
+use Railken\Cacheable\CacheableTrait;
+use Railken\Cacheable\CacheableContract;
+use Closure;
 
-abstract class RestManagerController extends RestController
+abstract class RestManagerController extends RestController implements CacheableContract
 {
+    use CacheableTrait;
+
+    public static $handlers;
+
     /**
      * @var string
      */
@@ -27,10 +34,10 @@ abstract class RestManagerController extends RestController
         $this->inializeManager();
 
         $this->middleware(function ($request, $next) {
+            $this->manager->setAgent($this->getUser());
+
             $this->inializeQueryable($request);
             $this->initializeFillable($request);
-
-            $this->manager->setAgent($this->getUser());
 
             return $next($request);
         });
@@ -50,14 +57,23 @@ abstract class RestManagerController extends RestController
     public function inializeQueryable(Request $request)
     {
         $query = $this->getManager()->getRepository()->getQuery();
+        
 
-        $queryable = $this->retrieveNestedAttributes($query, $request);
+        $relations = $this->retrieveNestedRelationsCached(strval($request->input('include')));
+        $this->parseRelations($query, $relations);
+
+        $queryable = $this->retrieveNestedAttributesCached($relations);
 
         $this->queryable = !empty($this->queryable) ? $this->queryable : $queryable;
         $this->startingQuery = $query;
     }
 
     public function initializeFillable(Request $request)
+    {
+        $this->fillable = array_merge($this->fillable, $this->getFillableCached());
+    }
+
+    public function getFillable()
     {
         $fillable = [];
 
@@ -73,7 +89,7 @@ abstract class RestManagerController extends RestController
             }
         }
 
-        $this->fillable = array_merge($this->fillable, $fillable);
+        return $fillable;
     }
 
     /**
@@ -91,38 +107,62 @@ abstract class RestManagerController extends RestController
         return $this->getQuery()->where($this->manager->newEntity()->getTable().'.id', $id)->first();
     }
 
-    public function retrieveNestedAttributes($query, Request $request): array
+    public function retrieveNestedRelations(string $include): array
     {
-        $attributes = Cache::rememberForever($this->getManager()->getName()."::attributes", function () {
-            return $this->getManager()->getAttributes()->map(function ($attribute) {
-                return $attribute->getName();
-            })->values();
-        });
-
-        $joiner = new Joiner($query);
-
-        $relations = Collection::make(explode(',', $request->input('include')))
+        return Collection::make(explode(',', $include))
             ->filter(function ($item) {
-                return Mapper::isValidNestedRelation($this->getManager()->getEntity(), $item);
+                return Mapper::isValidNestedRelationCached($this->getManager()->getEntity(), $item);
             })
             ->toArray();
+    }
+
+    public function parseRelations($query, array $relations)
+    {
+        $joiner = new Joiner($query);
 
         foreach ($relations as $relation) {
             $query->with($relation);
             $joiner->joinRelations($relation);
         }
 
-        Mapper::resolveRelations($this->getManager()->getEntity(), $relations)
-            ->map(function ($relation, $key) use (&$attributes) {
-                $manager = app('amethyst')->newManagerByModel($relation->model, $this->getManager()->getAgent());
+        self::executeHandlers('query', (object)[
+            'manager' => $this->manager, 
+            'query' => $query
+        ]);
+    }
 
-                $attributes = $attributes->merge(Cache::rememberForever(sprintf($manager->getName()."::attributeskey"), function () use ($manager, $key) {
-                    $manager->getAttributes()->map(function ($attribute) use ($key) {
-                        return $key.'.'.$attribute->getName();
-                    })->values();
-                }));
-            });
+    public function retrieveNestedAttributes(array $relations): array
+    {
+        $attributes = $this->getManager()->getAttributeNames();
 
+        foreach (Mapper::resolveRelationsCached($this->getManager()->getEntity(), $relations) as $key => $relation) {
+            $manager = app('amethyst')->newManagerByModel($relation->model, $this->getManager()->getAgent());
+
+            $attributes = $attributes->merge($manager->getAttributes()->map(function ($attribute) use ($key) {
+                return $key.'.'.$attribute->getName();
+            })->values());
+        }
         return $attributes->toArray();
+    }
+
+    public static function iniHandler(string $name)
+    {
+        if (!isset(self::$handlers[$name])) {
+            self::$handlers[$name] = [];
+        }
+    }
+
+    public static function addHandler(string $name, Closure $closure)
+    {
+        self::iniHandler($name);
+        self::$handlers[$name][] = $closure;
+    }
+    
+    public static function executeHandlers(string $name, $data)
+    {
+        self::iniHandler($name);
+        foreach (self::$handlers[$name] as $handler) {
+            $handler($data);
+        }
     }
 }
