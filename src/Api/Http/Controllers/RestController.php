@@ -162,12 +162,15 @@ abstract class RestController extends Controller
      *
      * @return array
      */
-    public function serializeCollection(Collection $collection, Request $request, $paginator)
+    public function serializeCollection(Collection $collection, Request $request, $paginator = null)
     {
         $transformer = $this->getFractalTransformer($collection->get(0), $request);
 
         $resource = new Fractal\Resource\Collection($collection, $transformer, $this->getResourceName());
-        $resource->setPaginator(new IlluminatePaginatorAdapter($paginator));
+
+        if ($paginator) {
+            $resource->setPaginator(new IlluminatePaginatorAdapter($paginator));
+        }
 
         return $this->getFractalManager($request)->createData($resource)->toArray();
     }
