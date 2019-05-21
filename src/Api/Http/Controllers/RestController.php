@@ -127,7 +127,7 @@ abstract class RestController extends Controller
     public function getFractalManager(Request $request)
     {
         $manager = new Fractal\Manager();
-        $manager->setSerializer(new JsonApiSerializer($this->getResourceBaseUrl($request)));
+        $manager->setSerializer(new JsonApiSerializer());
 
         if ($request->input('include') !== null) {
             $manager->parseIncludes($request->input('include'));

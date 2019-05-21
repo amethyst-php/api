@@ -57,15 +57,17 @@ abstract class RestManagerController extends RestController implements Cacheable
     public function inializeQueryable(Request $request)
     {
         $query = $this->getManager()->getRepository()->getQuery();
-        
+            
 
         $relations = $this->retrieveNestedRelationsCached(strval($request->input('include')));
+
         $this->parseRelations($query, $relations);
 
         $queryable = $this->retrieveNestedAttributesCached($relations);
 
         $this->queryable = !empty($this->queryable) ? $this->queryable : $queryable;
         $this->startingQuery = $query;
+        
     }
 
     public function initializeFillable(Request $request)

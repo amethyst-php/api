@@ -60,7 +60,7 @@ trait RestIndexTrait
         $result = $query->paginate($request->input('show', 10), ['*'], 'page', $request->input('page'));
 
         $resources = $result->getCollection();
-
+        
         return $this->response($this->serializeCollection($resources, $request, $result));
     }
 }

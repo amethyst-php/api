@@ -73,6 +73,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
     public function __call(string $method, array $args)
     {
         if (preg_match('/^include/', $method)) {
+
             $method = $this->inflector->tableize(preg_replace('/^include/', '', $method));
 
             return $this->resolveInclude($method, $args);
@@ -110,6 +111,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     public function resolveInclude(string $relationName, array $args)
     {
+
         $entity = $args[0];
 
         $relation = $entity->{$relationName};
@@ -130,7 +132,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
             $method = 'item';
         }
 
-        $manager = Helper::newManagerByModel($classRelation, $this->manager->getAgent());
+        $manager = app('amethyst')->newManagerByModel($classRelation, $this->manager->getAgent());
 
         if (!$manager) {
             return null;
