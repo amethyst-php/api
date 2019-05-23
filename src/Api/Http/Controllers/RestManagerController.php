@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Railken\Cacheable\CacheableTrait;
 use Railken\Cacheable\CacheableContract;
 use Closure;
+use Spatie\ResponseCache\Facades\ResponseCache;
 
 abstract class RestManagerController extends RestController implements CacheableContract
 {
@@ -27,11 +28,35 @@ abstract class RestManagerController extends RestController implements Cacheable
     protected $startingQuery;
 
     /**
+     * Cache response?
+     *
+     * @var boolean
+     */
+    protected $cached = false;
+
+    /**
      * Create a new instance.
      */
     public function __construct()
     {
         $this->inializeManager();
+
+        if ($this->cached) {
+            $this->middleware(\Spatie\ResponseCache\Middlewares\CacheResponse::class);
+
+            $this->middleware(function ($request, $next) {
+                $entity = $this->manager->getEntity();
+                $entity::saved(function($entity) use ($request) {
+                    ResponseCache::clear();
+                });
+                $entity::deleted(function($entity) use ($request) {
+                    ResponseCache::clear();
+                });
+
+                return $next($request);
+            });
+        }
+
 
         $this->middleware(function ($request, $next) {
             $this->manager->setAgent($this->getUser());
