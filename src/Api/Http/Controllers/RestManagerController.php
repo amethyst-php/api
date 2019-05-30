@@ -13,6 +13,7 @@ use Railken\Cacheable\CacheableTrait;
 use Railken\Cacheable\CacheableContract;
 use Closure;
 use Spatie\ResponseCache\Facades\ResponseCache;
+use Railken\LaraEye\Filter;
 
 abstract class RestManagerController extends RestController implements CacheableContract
 {
@@ -86,14 +87,51 @@ abstract class RestManagerController extends RestController implements Cacheable
 
         $relations = $this->retrieveNestedRelationsCached(strval($request->input('include')));
 
-        $this->parseRelations($query, $relations);
 
         $queryable = $this->retrieveNestedAttributesCached($relations);
 
         $this->queryable = !empty($this->queryable) ? $this->queryable : $queryable;
         $this->startingQuery = $query;
+
+        $usedRelations = $this->getUsedRelationsByFilter($request);
+
+        $joinedRelations = collect($relations)->filter(function ($relation) use ($usedRelations) {
+            return $usedRelations->search($relation) !== false;
+        })->toArray();
+
+        $this->parseRelations($query, $joinedRelations, $relations);
         
     }
+
+    public function getUsedRelationsByFilter(Request $request)
+    {
+        $filter = new Filter($this->manager->newEntity()->getTable(), $this->queryable);
+        
+        $relations = $this->extractFilterRelations($filter->getParser()->parse($request->input('query')));
+
+        return collect($relations)->map(function ($element) {
+            return implode(".", array_slice(explode(".", $element), 0, -1)); 
+        })->filter(function ($element) {
+            return !empty($element);
+        });
+    }
+
+    public function extractFilterRelations($node)
+    {
+        $relations = [];
+
+        if ($node instanceof \Railken\SQ\Languages\BoomTree\Nodes\KeyNode) {
+            $relations[] = $node->getValue();
+        }
+
+        foreach ($node->getChildren() as $child) {
+
+            $relations = array_merge($relations, $this->extractFilterRelations($child));
+        }
+
+        return $relations;
+    }
+
 
     public function initializeFillable(Request $request)
     {
@@ -143,12 +181,15 @@ abstract class RestManagerController extends RestController implements Cacheable
             ->toArray();
     }
 
-    public function parseRelations($query, array $relations)
+    public function parseRelations($query, array $joinedRelatinos, array $relations)
     {
         $joiner = new Joiner($query);
 
         foreach ($relations as $relation) {
             $query->with($relation);
+        }
+
+        foreach ($joinedRelatinos as $relation) {
             $joiner->joinRelations($relation);
         }
 
