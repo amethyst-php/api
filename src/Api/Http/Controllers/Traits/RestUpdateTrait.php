@@ -17,6 +17,8 @@ trait RestUpdateTrait
      */
     public function update($id, Request $request)
     {
+        $this->iniByRequest($request);
+        
         $entity = $this->getEntityById($id);
 
         if (!$entity) {

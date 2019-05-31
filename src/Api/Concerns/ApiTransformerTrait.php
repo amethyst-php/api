@@ -41,6 +41,6 @@ trait ApiTransformerTrait
      */
     public function transform(EntityContract $entity)
     {
-        return $this->manager->getSerializer()->serialize($entity, collect($this->getSelectedAttributes()))->toArray();
+        return $this->manager->getSerializer()->serialize($entity, null)->toArray();
     }
 }

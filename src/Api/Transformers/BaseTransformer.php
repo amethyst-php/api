@@ -43,6 +43,8 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     protected $inflector;
 
+    protected $relationedTransformers = [];
+
     /**
      * Create a new instance.
      *
@@ -57,7 +59,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $this->availableIncludes = Mapper::mapKeysRelation(get_class($manager->newEntity()));
 
-        $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
+        // $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
 
         // if ($entity) {
             // $this->setAuthorizedAttributes($this->manager->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
@@ -138,10 +140,21 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
             return null;
         }
 
+        $transformer = $this->getTransformerByManager($relationName, $manager);
+
         return $this->$method(
             $relation,
-            new BaseTransformer($manager, $this->request),
+            $transformer,
             str_replace('_', '-', $this->inflector->tableize($manager->getName()))
         );
+    }
+
+    public function getTransformerByManager($relationName, $manager)
+    {
+        if (!isset($this->relationedTransformers[$relationName])) {
+            $this->relationedTransformers[$relationName] = new BaseTransformer($manager, $this->request);
+        }
+        
+        return $this->relationedTransformers[$relationName];
     }
 }

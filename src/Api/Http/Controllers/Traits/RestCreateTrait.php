@@ -16,6 +16,8 @@ trait RestCreateTrait
      */
     public function create(Request $request)
     {
+        $this->iniByRequest($request);
+        
         $manager = $this->manager;
 
         $result = $manager->create($request->only($this->fillable));

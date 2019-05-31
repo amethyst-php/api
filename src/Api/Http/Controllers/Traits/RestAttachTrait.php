@@ -17,6 +17,8 @@ trait RestAttachTrait
      */
     public function attach($container_id, $relation_id, Request $request)
     {
+        $this->iniByRequest($request);
+        
         $container = $this->getManager()->getRepository()->findOneBy(['id' => $container_id]);
 
         if (!$container) {

@@ -17,6 +17,8 @@ trait RestDetachTrait
      */
     public function detach($container_id, $relation_id, Request $request)
     {
+        $this->iniByRequest($request);
+        
         $container = $this->getManager()->getRepository()->findOneBy(['id' => $container_id]);
 
         if (!$container) {

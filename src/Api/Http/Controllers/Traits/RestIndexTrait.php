@@ -20,11 +20,10 @@ trait RestIndexTrait
      */
     public function index(Request $request)
     {
-        return $this->createIndexResponseByQuery($this->getQuery(), $request);
-    }
+        $this->iniByRequest($request);
 
-    public function createIndexResponseByQuery($query, Request $request)
-    {
+        $query = $this->getQuery();
+
         if ($request->input('sort')) {
             $sorter = new Sorter();
             $sorter->setKeys($this->queryable);
