@@ -64,6 +64,12 @@ abstract class RestController extends Controller implements CacheableContract
 
     public function __construct()
     {
+        $this->middleware(function ($request, $next) {
+            $this->manager->setAgent($this->getUser());
+
+            return $next($request);
+        });
+        
         if ($this->cached) {
             $this->middleware(\Spatie\ResponseCache\Middlewares\CacheResponse::class);
 
