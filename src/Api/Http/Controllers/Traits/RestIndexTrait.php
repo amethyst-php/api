@@ -20,8 +20,6 @@ trait RestIndexTrait
      */
     public function index(Request $request)
     {
-        $this->iniByRequest($request);
-
         $query = $this->getQuery();
 
         if ($request->input('sort')) {

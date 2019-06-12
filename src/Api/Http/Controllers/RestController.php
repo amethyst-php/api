@@ -64,30 +64,21 @@ abstract class RestController extends Controller implements CacheableContract
 
     public function __construct()
     {
-        $this->middleware(function ($request, $next) {
-            $this->manager->setAgent($this->getUser());
-
-            return $next($request);
-        });
-        
         if ($this->cached) {
             $this->middleware(\Spatie\ResponseCache\Middlewares\CacheResponse::class);
-
-            $this->middleware(function ($request, $next) {
-
-                $entity = $this->manager->getEntity();
-                $entity::saved(function($entity) {
-                    ResponseCache::clear();
-                });
-                $entity::deleted(function($entity) {
-                    ResponseCache::clear();
-                });
-
-                return $next($request);
-            });
         }
     }
-    
+
+    public function callAction($method, $parameters)
+    {   
+        $request = collect($parameters)->first(function ($item) {
+            return $item instanceof Request;
+        });
+
+        $this->bootstrap($request);
+
+        return $this->{$method}(...array_values($parameters));
+    }
     /**
      * Retrieve resource name.
      *
@@ -108,14 +99,15 @@ abstract class RestController extends Controller implements CacheableContract
         return $this->manager;
     }
 
-    public function iniByRequest(Request $request) 
+    public function bootstrap(Request $request) 
     {
-        $this->manager->setAgent($this->getUser());
+        if ($this->manager) {
+            $this->manager->setAgent($this->getUser());
 
-        $this->initializeQueryable($request);
-        $this->initializeFillable($request);
+            $this->initializeQueryable($request);
+            $this->initializeFillable($request);
+        }
     }
-
 
     public function initializeQueryable(Request $request)
     {

@@ -20,8 +20,6 @@ trait RestEraseTrait
      */
     public function erase(Request $request)
     {
-        $this->iniByRequest($request);
-        
         $query = $this->getQuery();
 
         try {

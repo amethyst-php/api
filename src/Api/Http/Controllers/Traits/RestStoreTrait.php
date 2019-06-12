@@ -20,8 +20,6 @@ trait RestStoreTrait
      */
     public function store(Request $request)
     {
-        $this->iniByRequest($request);
-        
         $query = $this->getQuery();
 
         try {

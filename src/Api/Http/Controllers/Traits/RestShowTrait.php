@@ -17,8 +17,6 @@ trait RestShowTrait
      */
     public function show($id, Request $request)
     {
-        $this->iniByRequest($request);
-        
         $entity = $this->getEntityById($id);
 
         if (!$entity) {

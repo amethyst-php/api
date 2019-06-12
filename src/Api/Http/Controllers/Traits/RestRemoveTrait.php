@@ -17,8 +17,6 @@ trait RestRemoveTrait
      */
     public function remove($id, Request $request)
     {
-        $this->iniByRequest($request);
-        
         $entity = $this->getEntityById($id);
 
         if (!$entity) {
