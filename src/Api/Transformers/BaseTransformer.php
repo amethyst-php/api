@@ -57,7 +57,11 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         $this->inflector = new Inflector();
         $this->request = $request;
 
-        $this->availableIncludes = Mapper::mapKeysRelation(get_class($manager->newEntity()));
+        $this->availableIncludes = Collection::make(explode(',', $request->input('include')))
+            ->filter(function ($item) {
+                return app('eloquent.mapper')->getFinder()->isValidNestedRelation($this->manager->getEntity(), $item);
+            })
+            ->toArray();
 
         // $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
 

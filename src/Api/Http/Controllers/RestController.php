@@ -79,6 +79,7 @@ abstract class RestController extends Controller implements CacheableContract
 
         return $this->{$method}(...array_values($parameters));
     }
+    
     /**
      * Retrieve resource name.
      *
@@ -189,7 +190,7 @@ abstract class RestController extends Controller implements CacheableContract
     {
         $attributes = $this->getManager()->getAttributeNames();
 
-        foreach (Mapper::resolveRelationsCached($this->getManager()->getEntity(), $relations) as $key => $relation) {
+        foreach (app('eloquent.mapper')->getFinder()->resolveRelations($this->getManager()->getEntity(), $relations) as $key => $relation) {
             $manager = app('amethyst')->newManagerByModel($relation->model, $this->getManager()->getAgent());
 
             $attributes = $attributes->merge($manager->getAttributes()->map(function ($attribute) use ($key) {
@@ -341,7 +342,7 @@ abstract class RestController extends Controller implements CacheableContract
     {
         return Collection::make(explode(',', $include))
             ->filter(function ($item) {
-                return Mapper::isValidNestedRelationCached($this->getManager()->getEntity(), $item);
+                return app('eloquent.mapper')->getFinder()->isValidNestedRelation($this->getManager()->getEntity(), $item);
             })
             ->toArray();
     }
@@ -363,6 +364,7 @@ abstract class RestController extends Controller implements CacheableContract
             'query' => $query
         ]);
     }
+    
     public function getEntityById(int $id)
     {
         return $this->getQuery()->where($this->manager->newEntity()->getTable().'.id', $id)->first();
