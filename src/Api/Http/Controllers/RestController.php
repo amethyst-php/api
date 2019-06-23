@@ -22,6 +22,7 @@ use Railken\Cacheable\CacheableContract;
 use Closure;
 use Spatie\ResponseCache\Facades\ResponseCache;
 use Railken\LaraEye\Filter;
+use Railken\Lem\Attributes;
 
 
 abstract class RestController extends Controller implements CacheableContract
@@ -165,7 +166,7 @@ abstract class RestController extends Controller implements CacheableContract
 
     public function initializeFillable(Request $request)
     {
-        $this->fillable = array_merge($this->fillable, $this->getFillableCached());
+        $this->fillable = array_merge($this->fillable, $this->getFillable());
     }
 
     public function getFillable()
