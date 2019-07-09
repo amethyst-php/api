@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Support;
+namespace Amethyst\Api\Support;
 
 class Sorter
 {

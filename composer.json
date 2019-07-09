@@ -1,5 +1,5 @@
 {
-    "name": "railken/amethyst-api",
+    "name": "amethyst/api",
     "keywords": ["laravel"],
     "license": "MIT",
     "require": {
@@ -16,19 +16,19 @@
     },
     "autoload": {
         "psr-4" : {
-            "Railken\\Amethyst\\" : "src/"
+            "Amethyst\\" : "src/"
         }
     },
     "autoload-dev": {
         "psr-4": { 
-            "Railken\\Amethyst\\Tests\\": "tests/",
+            "Amethyst\\Tests\\": "tests/",
             "": "tests/laravel" 
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Railken\\Amethyst\\Providers\\ApiServiceProvider"
+                "Amethyst\\Providers\\ApiServiceProvider"
             ]
         }
     }

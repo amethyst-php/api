@@ -1,9 +1,9 @@
 <?php
 
-namespace Railken\Amethyst\Tests;
+namespace Amethyst\Tests;
 
 use App\Fakers\FooFaker;
-use Railken\Amethyst\Api\Support\Testing\TestableBaseTrait;
+use Amethyst\Api\Support\Testing\TestableBaseTrait;
 
 class ApiTest extends BaseTest
 {

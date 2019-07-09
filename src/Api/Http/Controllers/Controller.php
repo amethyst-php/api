@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Http\Controllers;
+namespace Amethyst\Api\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;

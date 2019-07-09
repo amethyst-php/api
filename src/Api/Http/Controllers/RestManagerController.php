@@ -1,10 +1,10 @@
 <?php
 
-namespace Railken\Amethyst\Api\Http\Controllers;
+namespace Amethyst\Api\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Railken\Amethyst\Api\Support\Helper;
+use Amethyst\Api\Support\Helper;
 use Railken\EloquentMapper\Joiner;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Attributes;

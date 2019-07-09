@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Http\Middleware;
+namespace Amethyst\Api\Http\Middleware;
 
 use Closure;
 use Symfony\Component\HttpFoundation\HeaderBag;

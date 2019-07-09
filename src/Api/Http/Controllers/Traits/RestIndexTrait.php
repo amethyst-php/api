@@ -1,10 +1,10 @@
 <?php
 
-namespace Railken\Amethyst\Api\Http\Controllers\Traits;
+namespace Amethyst\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
-use Railken\Amethyst\Api\Support\Exceptions\InvalidSorterFieldException;
-use Railken\Amethyst\Api\Support\Sorter;
+use Amethyst\Api\Support\Exceptions\InvalidSorterFieldException;
+use Amethyst\Api\Support\Sorter;
 use Railken\LaraEye\Filter;
 use Railken\SQ\Exceptions\QuerySyntaxException;
 use Symfony\Component\HttpFoundation\Response;

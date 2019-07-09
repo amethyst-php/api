@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Http\Controllers;
+namespace Amethyst\Api\Http\Controllers;
 
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ use League\Fractal;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
-use Railken\Amethyst\Api\Transformers\BaseTransformer;
+use Amethyst\Api\Transformers\BaseTransformer;
 use Railken\Lem\Contracts\EntityContract;
 use Railken\EloquentMapper\Joiner;
 use Railken\EloquentMapper\Mapper;
@@ -67,6 +67,7 @@ abstract class RestController extends Controller implements CacheableContract
     {
         if ($this->cached) {
             $this->middleware(\Spatie\ResponseCache\Middlewares\CacheResponse::class);
+
         }
     }
 
@@ -108,6 +109,22 @@ abstract class RestController extends Controller implements CacheableContract
 
             $this->initializeQueryable($request);
             $this->initializeFillable($request);
+        }
+
+        if ($this->cached) {
+            $entity = $this->manager->getEntity();
+
+            $entity::created(function () {
+                ResponseCache::clear();
+            });
+
+            $entity::updated(function () {
+                ResponseCache::clear();
+            });
+
+            $entity::deleted(function () {
+                ResponseCache::clear();
+            });
         }
     }
 

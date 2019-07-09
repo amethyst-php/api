@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Tests;
+namespace Amethyst\Tests;
 
 use App as App;
 use App\Controllers\FooController;
@@ -8,7 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use Railken\Amethyst\Api\Support\Router;
+use Amethyst\Api\Support\Router;
 
 abstract class BaseTest extends \Orchestra\Testbench\TestCase
 {
@@ -87,7 +87,7 @@ abstract class BaseTest extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            \Railken\Amethyst\Providers\ApiServiceProvider::class,
+            \Amethyst\Providers\ApiServiceProvider::class,
         ];
     }
 }

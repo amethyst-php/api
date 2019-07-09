@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Support\Exceptions;
+namespace Amethyst\Api\Support\Exceptions;
 
 use Exception;
 

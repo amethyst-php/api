@@ -1,14 +1,14 @@
 <?php
 
-namespace Railken\Amethyst\Api\Transformers;
+namespace Amethyst\Api\Transformers;
 
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
-use Railken\Amethyst\Api\Concerns\ApiTransformerTrait;
-use Railken\Amethyst\Api\Contracts\TransformerContract;
-use Railken\Amethyst\Api\Support\Helper;
+use Amethyst\Api\Concerns\ApiTransformerTrait;
+use Amethyst\Api\Contracts\TransformerContract;
+use Amethyst\Api\Support\Helper;
 use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;

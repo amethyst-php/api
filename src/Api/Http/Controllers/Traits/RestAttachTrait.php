@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Http\Controllers\Traits;
+namespace Amethyst\Api\Http\Controllers\Traits;
 
 use Illuminate\Http\Request;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Contracts;
+namespace Amethyst\Api\Contracts;
 
 interface TransformerContract
 {

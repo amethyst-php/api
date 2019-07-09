@@ -1,6 +1,6 @@
 <?php
 
-namespace Railken\Amethyst\Api\Support\Testing;
+namespace Amethyst\Api\Support\Testing;
 
 use Illuminate\Support\Facades\Route;
 use Railken\Lem\Attributes\BelongsToAttribute;
