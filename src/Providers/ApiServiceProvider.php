@@ -22,6 +22,7 @@ class ApiServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(\Railken\Lem\Providers\ManagerServiceProvider::class);
+        $this->app->register(\Railken\EloquentMapper\EloquentMapperServiceProvider::class);
         $this->mergeConfigFrom(__DIR__.'/../../config/amethyst.api.php', 'amethyst.api');
     }
 }
