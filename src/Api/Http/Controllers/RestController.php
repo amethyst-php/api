@@ -383,7 +383,7 @@ abstract class RestController extends Controller implements CacheableContract
         ]);
     }
     
-    public function getEntityById(int $id)
+    public function getEntityById($id)
     {
         return $this->getQuery()->where($this->manager->newEntity()->getTable().'.id', $id)->first();
     }

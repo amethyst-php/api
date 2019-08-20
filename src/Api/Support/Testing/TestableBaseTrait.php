@@ -98,13 +98,13 @@ trait TestableBaseTrait
         if ($this->checkRoute('store')) {
             $response = $this->callAndTest('POST', route($routeName.'.create'), $this->getFakerParameters(), Response::HTTP_CREATED);
             $resource = json_decode($response->getContent())->data;
-            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->getFakerParameters(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
+            $response = $this->callAndTest('PUT', route($routeName.'.store'), array_merge($this->getFakerParameters(), ['query' => 'id eq "'.$resource->id.'"']), Response::HTTP_OK);
         }
 
         if ($this->checkRoute('erase')) {
             $response = $this->callAndTest('POST', route($routeName.'.create'), $this->getFakerParameters(), Response::HTTP_CREATED);
             $resource = json_decode($response->getContent())->data;
-            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->getFakerParameters(), ['query' => 'id eq '.$resource->id]), Response::HTTP_OK);
+            $response = $this->callAndTest('DELETE', route($routeName.'.erase'), array_merge($this->getFakerParameters(), ['query' => 'id eq "'.$resource->id.'"']), Response::HTTP_OK);
         }
     }
 
