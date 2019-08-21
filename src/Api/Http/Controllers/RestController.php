@@ -2,9 +2,12 @@
 
 namespace Amethyst\Api\Http\Controllers;
 
+use Amethyst\Api\Transformers\BaseTransformer;
+use Closure;
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -12,31 +15,19 @@ use League\Fractal;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
-use Amethyst\Api\Transformers\BaseTransformer;
-use Railken\Lem\Contracts\EntityContract;
-use Railken\EloquentMapper\Joiner;
-use Railken\EloquentMapper\Mapper;
-use Illuminate\Support\Facades\Cache;
-use Railken\Cacheable\CacheableTrait;
 use Railken\Cacheable\CacheableContract;
-use Closure;
-use Spatie\ResponseCache\Facades\ResponseCache;
+use Railken\Cacheable\CacheableTrait;
+use Railken\EloquentMapper\Joiner;
 use Railken\LaraEye\Filter;
 use Railken\Lem\Attributes;
-
+use Railken\Lem\Contracts\EntityContract;
+use Spatie\ResponseCache\Facades\ResponseCache;
 
 abstract class RestController extends Controller implements CacheableContract
 {
     use CacheableTrait;
 
     public static $handlers;
-
-    /**
-     * Cache response?
-     *
-     * @var boolean
-     */
-    protected $cached = false;
 
     /**
      * @var string
@@ -63,16 +54,22 @@ abstract class RestController extends Controller implements CacheableContract
      */
     public $fillable = [];
 
+    /**
+     * Cache response?
+     *
+     * @var boolean
+     */
+    protected $cached = false;
+
     public function __construct()
     {
         if ($this->cached) {
             $this->middleware(\Spatie\ResponseCache\Middlewares\CacheResponse::class);
-
         }
     }
 
     public function callAction($method, $parameters)
-    {   
+    {
         $request = collect($parameters)->first(function ($item) {
             return $item instanceof Request;
         });
@@ -81,7 +78,7 @@ abstract class RestController extends Controller implements CacheableContract
 
         return $this->{$method}(...array_values($parameters));
     }
-    
+
     /**
      * Retrieve resource name.
      *
@@ -102,7 +99,7 @@ abstract class RestController extends Controller implements CacheableContract
         return $this->manager;
     }
 
-    public function bootstrap(Request $request) 
+    public function bootstrap(Request $request)
     {
         if ($this->manager) {
             $this->manager->setAgent($this->getUser());
@@ -131,10 +128,8 @@ abstract class RestController extends Controller implements CacheableContract
     public function initializeQueryable(Request $request)
     {
         $query = $this->getManager()->getRepository()->getQuery();
-            
 
         $relations = $this->retrieveNestedRelationsCached(strval($request->input('include')));
-
 
         $queryable = $this->retrieveNestedAttributesCached($relations);
 
@@ -148,17 +143,16 @@ abstract class RestController extends Controller implements CacheableContract
         })->toArray();
 
         $this->parseRelations($query, $joinedRelations, $relations);
-        
     }
 
     public function getUsedRelationsByFilter(Request $request)
     {
         $filter = new Filter($this->manager->newEntity()->getTable(), $this->queryable);
-        
+
         $relations = $this->extractFilterRelations($filter->getParser()->parse($request->input('query')));
 
         return collect($relations)->map(function ($element) {
-            return implode(".", array_slice(explode(".", $element), 0, -1)); 
+            return implode('.', array_slice(explode('.', $element), 0, -1));
         })->filter(function ($element) {
             return !empty($element);
         });
@@ -173,13 +167,11 @@ abstract class RestController extends Controller implements CacheableContract
         }
 
         foreach ($node->getChildren() as $child) {
-
             $relations = array_merge($relations, $this->extractFilterRelations($child));
         }
 
         return $relations;
     }
-
 
     public function initializeFillable(Request $request)
     {
@@ -204,6 +196,7 @@ abstract class RestController extends Controller implements CacheableContract
 
         return $fillable;
     }
+
     public function retrieveNestedAttributes(array $relations): array
     {
         $attributes = $this->getManager()->getAttributeNames();
@@ -215,6 +208,7 @@ abstract class RestController extends Controller implements CacheableContract
                 return $key.'.'.$attribute->getName();
             })->values());
         }
+
         return $attributes->toArray();
     }
 
@@ -331,8 +325,6 @@ abstract class RestController extends Controller implements CacheableContract
         return $this->getFractalManager($request)->createData($resource)->toArray();
     }
 
-
-
     public static function iniHandler(string $name)
     {
         if (!isset(self::$handlers[$name])) {
@@ -345,16 +337,16 @@ abstract class RestController extends Controller implements CacheableContract
         self::iniHandler($name);
         self::$handlers[$name][] = $closure;
     }
-    
+
     public static function executeHandlers(string $name, $data)
     {
         self::iniHandler($name);
         foreach (self::$handlers[$name] as $handler) {
             $handler($data);
+
             return;
         }
     }
-
 
     public function retrieveNestedRelations(string $include): array
     {
@@ -377,12 +369,12 @@ abstract class RestController extends Controller implements CacheableContract
             $joiner->joinRelations($relation);
         }
 
-        self::executeHandlers('query', (object)[
-            'manager' => $this->manager, 
-            'query' => $query
+        self::executeHandlers('query', (object) [
+            'manager' => $this->manager,
+            'query'   => $query,
         ]);
     }
-    
+
     public function getEntityById($id)
     {
         return $this->getQuery()->where($this->manager->newEntity()->getTable().'.id', $id)->first();

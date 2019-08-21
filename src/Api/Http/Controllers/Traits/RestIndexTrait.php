@@ -2,9 +2,9 @@
 
 namespace Amethyst\Api\Http\Controllers\Traits;
 
-use Illuminate\Http\Request;
 use Amethyst\Api\Support\Exceptions\InvalidSorterFieldException;
 use Amethyst\Api\Support\Sorter;
+use Illuminate\Http\Request;
 use Railken\LaraEye\Filter;
 use Railken\SQ\Exceptions\QuerySyntaxException;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,7 +57,7 @@ trait RestIndexTrait
         $result = $query->paginate($request->input('show', 10), ['*'], 'page', $request->input('page'));
 
         $resources = $result->getCollection();
-        
+
         return $this->response($this->serializeCollection($resources, $request, $result));
     }
 }

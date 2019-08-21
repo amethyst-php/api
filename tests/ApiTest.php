@@ -2,8 +2,8 @@
 
 namespace Amethyst\Tests;
 
-use App\Fakers\FooFaker;
 use Amethyst\Api\Support\Testing\TestableBaseTrait;
+use App\Fakers\FooFaker;
 
 class ApiTest extends BaseTest
 {

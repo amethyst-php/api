@@ -2,14 +2,12 @@
 
 namespace Amethyst\Api\Transformers;
 
+use Amethyst\Api\Concerns\ApiTransformerTrait;
+use Amethyst\Api\Contracts\TransformerContract;
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
-use Amethyst\Api\Concerns\ApiTransformerTrait;
-use Amethyst\Api\Contracts\TransformerContract;
-use Amethyst\Api\Support\Helper;
-use Railken\EloquentMapper\Mapper;
 use Railken\Lem\Contracts\ManagerContract;
 use Railken\Lem\Tokens;
 
@@ -79,7 +77,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
     public function __call(string $method, array $args)
     {
         if (preg_match('/^include/', $method)) {
-
             $method = $this->inflector->tableize(preg_replace('/^include/', '', $method));
 
             return $this->resolveInclude($method, $args);
@@ -117,7 +114,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
      */
     public function resolveInclude(string $relationName, array $args)
     {
-
         $entity = $args[0];
 
         $relation = $entity->{$relationName};
@@ -158,7 +154,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         if (!isset($this->relationedTransformers[$relationName])) {
             $this->relationedTransformers[$relationName] = new BaseTransformer($manager, $this->request);
         }
-        
+
         return $this->relationedTransformers[$relationName];
     }
 }

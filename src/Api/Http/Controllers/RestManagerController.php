@@ -2,19 +2,6 @@
 
 namespace Amethyst\Api\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Amethyst\Api\Support\Helper;
-use Railken\EloquentMapper\Joiner;
-use Railken\EloquentMapper\Mapper;
-use Railken\Lem\Attributes;
-use Illuminate\Support\Facades\Cache;
-use Railken\Cacheable\CacheableTrait;
-use Railken\Cacheable\CacheableContract;
-use Closure;
-use Spatie\ResponseCache\Facades\ResponseCache;
-use Railken\LaraEye\Filter;
-
 abstract class RestManagerController extends RestController
 {
     /**
@@ -22,7 +9,7 @@ abstract class RestManagerController extends RestController
      */
     public $class;
 
-    protected $startingQuery;   
+    protected $startingQuery;
 
     /**
      * Create a new instance.
@@ -54,5 +41,4 @@ abstract class RestManagerController extends RestController
     {
         return $this->startingQuery;
     }
-
 }

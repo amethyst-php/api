@@ -1,9 +1,8 @@
 # Amethyst - Api
 
-[![Build Status](https://travis-ci.org/amethyst/api.svg?branch=master)](https://travis-ci.org/amethyst/api)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/amethyst-php/api.svg?branch=master)](https://travis-ci.org/amethyst-php/api)
 
-This is a [amethyst](https://github.com/railken/amethyst) package
+This is a [amethyst](https://github.com/amethyst-php/amethyst) package
 
 # Requirements
 

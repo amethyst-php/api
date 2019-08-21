@@ -2,7 +2,6 @@
 
 namespace Amethyst\Api\Concerns;
 
-use Illuminate\Support\Collection;
 use Railken\Lem\Contracts\EntityContract;
 
 trait ApiTransformerTrait
