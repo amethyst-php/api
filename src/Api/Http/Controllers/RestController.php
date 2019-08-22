@@ -18,16 +18,15 @@ use League\Fractal\TransformerAbstract;
 use Railken\Cacheable\CacheableContract;
 use Railken\Cacheable\CacheableTrait;
 use Railken\EloquentMapper\Joiner;
-use Railken\LaraEye\Filter;
 use Railken\Lem\Attributes;
 use Railken\Lem\Contracts\EntityContract;
 use Spatie\ResponseCache\Facades\ResponseCache;
+use Illuminate\Database\Eloquent\Model;
+use Railken\EloquentMapper\Scopes\FilterScope;
 
 abstract class RestController extends Controller implements CacheableContract
 {
     use CacheableTrait;
-
-    public static $handlers;
 
     /**
      * @var string
@@ -129,48 +128,26 @@ abstract class RestController extends Controller implements CacheableContract
     {
         $query = $this->getManager()->getRepository()->getQuery();
 
-        $relations = $this->retrieveNestedRelationsCached(strval($request->input('include')));
+        $filter = new FilterScope(
+            function (Model $model) {
+                return app('amethyst')->newManagerByModel(
+                    get_class($model), 
+                    $this->getManager()->getAgent()
+                )->getAttributes()
+                ->map(function ($attribute) {
+                    return $attribute->getName();
+                })->values()->toArray();
+            },
+            $request->input('query', ''), 
+            explode(",", $request->input('include'))
+        );
 
-        $queryable = $this->retrieveNestedAttributesCached($relations);
+        $filter->apply($query, $this->manager->newEntity());
 
-        $this->queryable = !empty($this->queryable) ? $this->queryable : $queryable;
+        $this->queryable = $filter->getKeys();
+
         $this->startingQuery = $query;
 
-        $usedRelations = $this->getUsedRelationsByFilter($request);
-
-        $joinedRelations = collect($relations)->filter(function ($relation) use ($usedRelations) {
-            return $usedRelations->search($relation) !== false;
-        })->toArray();
-
-        $this->parseRelations($query, $joinedRelations, $relations);
-    }
-
-    public function getUsedRelationsByFilter(Request $request)
-    {
-        $filter = new Filter($this->manager->newEntity()->getTable(), $this->queryable);
-
-        $relations = $this->extractFilterRelations($filter->getParser()->parse($request->input('query')));
-
-        return collect($relations)->map(function ($element) {
-            return implode('.', array_slice(explode('.', $element), 0, -1));
-        })->filter(function ($element) {
-            return !empty($element);
-        });
-    }
-
-    public function extractFilterRelations($node)
-    {
-        $relations = [];
-
-        if ($node instanceof \Railken\SQ\Languages\BoomTree\Nodes\KeyNode) {
-            $relations[] = $node->getValue();
-        }
-
-        foreach ($node->getChildren() as $child) {
-            $relations = array_merge($relations, $this->extractFilterRelations($child));
-        }
-
-        return $relations;
     }
 
     public function initializeFillable(Request $request)
@@ -195,21 +172,6 @@ abstract class RestController extends Controller implements CacheableContract
         }
 
         return $fillable;
-    }
-
-    public function retrieveNestedAttributes(array $relations): array
-    {
-        $attributes = $this->getManager()->getAttributeNames();
-
-        foreach (app('eloquent.mapper')->getFinder()->resolveRelations($this->getManager()->getEntity(), $relations) as $key => $relation) {
-            $manager = app('amethyst')->newManagerByModel($relation->model, $this->getManager()->getAgent());
-
-            $attributes = $attributes->merge($manager->getAttributes()->map(function ($attribute) use ($key) {
-                return $key.'.'.$attribute->getName();
-            })->values());
-        }
-
-        return $attributes->toArray();
     }
 
     /**
@@ -323,56 +285,6 @@ abstract class RestController extends Controller implements CacheableContract
         }
 
         return $this->getFractalManager($request)->createData($resource)->toArray();
-    }
-
-    public static function iniHandler(string $name)
-    {
-        if (!isset(self::$handlers[$name])) {
-            self::$handlers[$name] = [];
-        }
-    }
-
-    public static function addHandler(string $name, Closure $closure)
-    {
-        self::iniHandler($name);
-        self::$handlers[$name][] = $closure;
-    }
-
-    public static function executeHandlers(string $name, $data)
-    {
-        self::iniHandler($name);
-        foreach (self::$handlers[$name] as $handler) {
-            $handler($data);
-
-            return;
-        }
-    }
-
-    public function retrieveNestedRelations(string $include): array
-    {
-        return Collection::make(explode(',', $include))
-            ->filter(function ($item) {
-                return app('eloquent.mapper')->getFinder()->isValidNestedRelation($this->getManager()->getEntity(), $item);
-            })
-            ->toArray();
-    }
-
-    public function parseRelations($query, array $joinedRelatinos, array $relations)
-    {
-        $joiner = new Joiner($query);
-
-        foreach ($relations as $relation) {
-            $query->with($relation);
-        }
-
-        foreach ($joinedRelatinos as $relation) {
-            $joiner->joinRelations($relation);
-        }
-
-        self::executeHandlers('query', (object) [
-            'manager' => $this->manager,
-            'query'   => $query,
-        ]);
     }
 
     public function getEntityById($id)
