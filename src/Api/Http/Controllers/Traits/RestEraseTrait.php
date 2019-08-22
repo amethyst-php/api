@@ -23,10 +23,7 @@ trait RestEraseTrait
         $query = $this->getQuery();
 
         try {
-            if ($request->input('query')) {
-                $filter = new Filter($this->manager->newEntity()->getTable(), $this->queryable);
-                $filter->build($query, $request->input('query'));
-            }
+            $this->filterQuery($query, $request);
         } catch (QuerySyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }

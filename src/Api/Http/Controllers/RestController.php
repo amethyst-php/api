@@ -128,6 +128,11 @@ abstract class RestController extends Controller implements CacheableContract
     {
         $query = $this->getManager()->getRepository()->getQuery();
 
+        $this->startingQuery = $query;
+    }
+
+    public function filterQuery($query, Request $request)
+    {
         $filter = new FilterScope(
             function (Model $model) {
                 return app('amethyst')->newManagerByModel(
@@ -138,16 +143,13 @@ abstract class RestController extends Controller implements CacheableContract
                     return $attribute->getName();
                 })->values()->toArray();
             },
-            $request->input('query', ''), 
+            $request->input('query') ?? '', 
             explode(",", $request->input('include'))
         );
 
         $filter->apply($query, $this->manager->newEntity());
 
         $this->queryable = $filter->getKeys();
-
-        $this->startingQuery = $query;
-
     }
 
     public function initializeFillable(Request $request)
