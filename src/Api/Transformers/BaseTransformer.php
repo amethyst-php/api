@@ -77,7 +77,7 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
     public function __call(string $method, array $args)
     {
         if (preg_match('/^include/', $method)) {
-            $method = $this->inflector->tableize(preg_replace('/^include/', '', $method));
+            $method = preg_replace('/^include/', '', $method);
 
             return $this->resolveInclude($method, $args);
         }
@@ -117,6 +117,11 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         $entity = $args[0];
 
         $relation = $entity->{$relationName};
+
+        if (!$relation) {
+            $relationName = $this->inflector->tableize($relationName);
+            $relation = $entity->{$relationName};
+        }
 
         if (!$relation) {
             return null;
