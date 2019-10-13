@@ -55,17 +55,9 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         $this->inflector = new Inflector();
         $this->request = $request;
 
-        $this->availableIncludes = Collection::make(explode(',', $request->input('include')))
-            ->filter(function ($item) {
-                return app('eloquent.mapper')->getFinder()->isValidNestedRelation($this->manager->getEntity(), $item);
-            })
-            ->toArray();
-
-        // $this->setSelectedAttributes($this->getSelectedAttributesByRequest($request));
-
-        // if ($entity) {
-            // $this->setAuthorizedAttributes($this->manager->getAuthorizer()->getAuthorizedAttributes(Tokens::PERMISSION_SHOW, $entity)->keys()->toArray());
-        // }
+        $this->availableIncludes = collect(app('eloquent.mapper')->getFinder()->relations($this->manager->getEntity()))->map(function ($i) {
+            return $i->name;
+        })->toArray();
     }
 
     /**
@@ -78,8 +70,8 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
     {
         if (preg_match('/^include/', $method)) {
             $method = preg_replace('/^include/', '', $method);
-
-            return $this->resolveInclude($method, $args);
+            
+            return $this->resolveInclude(lcfirst($method), $args);
         }
 
         trigger_error('Call to undefined method '.__CLASS__.'::'.$method.'()', E_USER_ERROR);
