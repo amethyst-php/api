@@ -145,7 +145,7 @@ abstract class RestController extends Controller implements CacheableContract
             },
             $request->input('query') ?? '', 
             explode(",", $request->input('include')), 
-            $request->input('queries')
+            $request->input('queries', [])
         );
 
         $filter->apply($query, $this->manager->newEntity());
