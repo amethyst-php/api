@@ -2,18 +2,19 @@
 
 namespace Amethyst\Api\Transformers;
 
-use Amethyst\Api\Concerns\ApiTransformerTrait;
 use Amethyst\Api\Contracts\TransformerContract;
 use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use League\Fractal\TransformerAbstract;
 use Railken\Lem\Contracts\ManagerContract;
+use Railken\Lem\Contracts\EntityContract;
 use Railken\Lem\Tokens;
 
 class BaseTransformer extends TransformerAbstract implements TransformerContract
 {
-    use ApiTransformerTrait;
+    protected $selectedAttributes = [];
+    protected $authorizedAttributes = [];
 
     /**
      * Manager.
@@ -58,6 +59,10 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         $this->availableIncludes = collect(app('eloquent.mapper')->getFinder()->relations($this->manager->getEntity()))->map(function ($i) {
             return $i->name;
         })->toArray();
+
+        $this->availableAttributes = collect($this->manager->getAttributes()->map(function ($i) {
+            return $i->getName();
+        }));
     }
 
     /**
@@ -75,25 +80,6 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         }
 
         trigger_error('Call to undefined method '.__CLASS__.'::'.$method.'()', E_USER_ERROR);
-    }
-
-    public function getSelectedAttributesByRequest(Request $request)
-    {
-        $selectable = $this->manager->getAttributes()->keys();
-
-        $select = collect(explode(',', strval($request->input('select', ''))));
-
-        if ($select->count() > 0) {
-            $select = $selectable->filter(function ($attr) use ($select) {
-                return $select->contains($attr);
-            });
-        }
-
-        if ($select->count() == 0) {
-            $select = $selectable;
-        }
-
-        return $select->toArray();
     }
 
     /**
@@ -139,11 +125,13 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
 
         $transformer = $this->getTransformerByManager($relationName, $manager);
 
-        return $this->$method(
+        $t = $this->$method(
             $relation,
             $transformer,
             str_replace('_', '-', $this->inflector->tableize($manager->getName()))
         );
+
+        return $t;
     }
 
     public function getTransformerByManager($relationName, $manager)
@@ -153,5 +141,45 @@ class BaseTransformer extends TransformerAbstract implements TransformerContract
         }
 
         return $this->relationedTransformers[$relationName];
+    }
+
+    public function setSelectedAttributes(array $selectedAttributes = [])
+    {
+        $this->selectedAttributes = $selectedAttributes;
+
+        return $this;
+    }
+
+    public function getSelectedAttributes(): array
+    {
+        return $this->selectedAttributes;
+    }
+
+    public function setAuthorizedAttributes(array $authorizedAttributes = [])
+    {
+        $this->authorizedAttributes = $authorizedAttributes;
+
+        return $this;
+    }
+
+    public function getAuthorizedAttributes(): array
+    {
+        return $this->authorizedAttributes;
+    }
+
+    /**
+     * Turn this item object into a generic array.
+     *
+     * @return array
+     */
+    public function transform(EntityContract $entity)
+    {
+        $time = microtime(true);
+
+        $s = $this->manager->getSerializer()->serialize($entity, null)->toArray();
+
+        \Log::info(microtime(true) - $time);
+
+        return $s;
     }
 }

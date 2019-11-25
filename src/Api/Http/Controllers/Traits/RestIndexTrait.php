@@ -20,6 +20,7 @@ trait RestIndexTrait
      */
     public function index(Request $request)
     {
+        
         $query = $this->getQuery();
 
         try {

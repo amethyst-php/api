@@ -17,7 +17,6 @@ use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 use Railken\Cacheable\CacheableContract;
 use Railken\Cacheable\CacheableTrait;
-use Railken\EloquentMapper\Joiner;
 use Railken\Lem\Attributes;
 use Railken\Lem\Contracts\EntityContract;
 use Spatie\ResponseCache\Facades\ResponseCache;
@@ -133,23 +132,22 @@ abstract class RestController extends Controller implements CacheableContract
 
     public function filterQuery($query, Request $request)
     {
-        $filter = new FilterScope(
-            function (Model $model) {
-                return app('amethyst')->newManagerByModel(
-                    get_class($model), 
-                    $this->getManager()->getAgent()
-                )->getAttributes()
-                ->map(function ($attribute) {
-                    return $attribute->getName();
-                })->values()->toArray();
-            },
+
+        $filter = app('amethyst')->filter(
+            $query, 
             $request->input('query') ?? '', 
-            explode(",", $request->input('include')), 
-            $request->input('queries', [])
+            $this->manager->newEntity(), 
+            $this->manager->getAgent(),
+            array_map(function ($string) {
+                if (is_string($string) && is_array(json_decode($string, true))) {
+                    return json_decode($string);
+                }
+
+                return $string;
+            }, is_array($request->input('include')) ? $request->input('include') : explode(",", $request->input('include')))
         );
 
-        $filter->apply($query, $this->manager->newEntity());
-
+        
         $this->queryable = $filter->getKeys();
     }
 
@@ -245,10 +243,35 @@ abstract class RestController extends Controller implements CacheableContract
         $manager->setSerializer(new JsonApiSerializer());
 
         if ($request->input('include') !== null) {
-            $manager->parseIncludes($request->input('include'));
+            $manager->parseIncludes($this->parseIncludes($request->input('include')));
         }
 
         return $manager;
+    }
+
+    public function parseIncludes($include)
+    {
+        $include = is_array($include) ? $include : explode(",", $include);
+
+        $includes = array_map(function ($element) {
+
+            if (is_string($element) && is_array(json_decode($element, true))) {
+                $element = json_decode($element);
+            }
+
+            if (is_array($element)) {
+                $element = (object) $element;
+            }
+
+            if (is_object($element)) {
+                return $element->name;
+            }
+
+            return $element;
+
+        }, $include);
+
+        return $includes;
     }
 
     /**
@@ -279,6 +302,8 @@ abstract class RestController extends Controller implements CacheableContract
      */
     public function serializeCollection(Collection $collection, Request $request, $paginator = null)
     {
+        $start = microtime(true);
+
         $transformer = $this->getFractalTransformer($collection->get(0), $request);
 
         $resource = new Fractal\Resource\Collection($collection, $transformer, $this->getResourceName());
