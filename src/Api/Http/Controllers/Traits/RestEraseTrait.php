@@ -33,10 +33,11 @@ trait RestEraseTrait
         DB::beginTransaction();
 
         $result = new Result();
-
-        $query->chunk(100, function ($resources) use ($params, &$result) {
+        $counter = 0;
+        $query->chunk(100, function ($resources) use ($params, &$result, $counter) {
             foreach ($resources as $resource) {
                 $result->addErrors($this->getManager()->remove($resource)->getErrors());
+                $counter++;
             }
         });
 
@@ -48,6 +49,6 @@ trait RestEraseTrait
 
         DB::commit();
 
-        return $this->response(null, Response::HTTP_OK);
+        return $this->response(['data' => $counter], Response::HTTP_OK);
     }
 }

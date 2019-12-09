@@ -52,6 +52,7 @@ trait RestIndexTrait
 
         // $selectable = $this->getSelectedAttributesByRequest($request);
 
+        $query->groupBy($this->getManager()->getRepository()->newEntity()->getTable().".id");
         $result = $query->paginate($request->input('show', 10), ['*'], 'page', $request->input('page'));
 
         $resources = $result->getCollection();
