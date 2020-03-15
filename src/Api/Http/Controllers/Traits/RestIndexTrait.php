@@ -6,7 +6,7 @@ use Amethyst\Api\Support\Exceptions\InvalidSorterFieldException;
 use Amethyst\Api\Support\Sorter;
 use Illuminate\Http\Request;
 use Railken\LaraEye\Filter;
-use Railken\SQ\Exceptions\QuerySyntaxException;
+use Railken\LaraEye\Exceptions\FilterSyntaxException;
 use Symfony\Component\HttpFoundation\Response;
 
 trait RestIndexTrait
@@ -25,7 +25,7 @@ trait RestIndexTrait
 
         try {
             $this->filterQuery($query, $request);
-        } catch (QuerySyntaxException $e) {
+        } catch (FilterSyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }
 

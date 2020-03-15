@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Railken\LaraEye\Filter;
 use Railken\Lem\Result;
-use Railken\SQ\Exceptions\QuerySyntaxException;
+use Railken\LaraEye\Exceptions\FilterSyntaxException;
 use Symfony\Component\HttpFoundation\Response;
 
 trait RestEraseTrait
@@ -24,7 +24,7 @@ trait RestEraseTrait
 
         try {
             $this->filterQuery($query, $request);
-        } catch (QuerySyntaxException $e) {
+        } catch (FilterSyntaxException $e) {
             return $this->error(['code' => 'QUERY_SYNTAX_ERROR', 'message' => 'Syntax error']);
         }
 
